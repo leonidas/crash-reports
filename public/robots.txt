@@ -1,0 +1,5 @@
+# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use the robots.txt file
+#
+# No robots should visit this site further
+User-Agent: *
+Disallow: /

@@ -8,7 +8,7 @@ set :use_sudo, false
 set :copy_compression, :zip
 
 set :scm, :git
-set :repository, "http://gitorious.org/meego-quality-assurance/crash-reports.git"
+set :repository, "git://gitorious.org/meego-quality-assurance/crash-reports.git"
 set :deploy_via, :remote_cache
 
 set :public_children, %w(img css js)

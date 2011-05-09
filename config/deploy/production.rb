@@ -1,4 +1,4 @@
-appname  = <<<application name>>>
+appname  = "crash-reports"
 hostname = "#{appname}.leonidasoy.fi"
 
 set :application, hostname
@@ -20,7 +20,7 @@ namespace :db do
   task :dump, :roles => :db, :only => {:primary => true} do
     # TODO: mongodump -> tar -> download -> extract
     #  run "cd #{current_path} && mongodump"
-    #  get "#{current_path}/qadash_dbdump.tar", "./qadash_dbdump.tar"
-    #  run "rm #{current_path}/qadash_dbdump.tar"
+    #  get "#{current_path}/mongodbdump.tar", "./mongodbdump.tar"
+    #  run "rm #{current_path}/mongodbdump.tar"
   end
 end

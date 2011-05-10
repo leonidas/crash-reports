@@ -18,8 +18,8 @@
 # 02110-1301 USA
 #
 
-PORT    = 3030
-APPNAME = "myapp"
+PORT    = 3040
+APPNAME = "crash-reports"
 
 require.paths.unshift './node_modules'
 require.paths.push 'server'

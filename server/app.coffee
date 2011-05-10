@@ -1,6 +1,7 @@
 
 express = require('express')
 http    = require('http')
+stylus  = require('stylus')
 
 MongoStore = require('connect-mongo')
 
@@ -18,6 +19,12 @@ create_app = (basedir, db) ->
             src: COFFEE
             dest: PUBLIC
             enable: ['coffeescript']
+
+        app.use stylus.middleware {
+            debug: true
+            src: basedir + '/client/stylus'
+            dest: PUBLIC
+        }
 
         app.use express.cookieParser()
         app.use express.bodyParser()

@@ -6,10 +6,10 @@
     <meta name="description" content="" />
     <meta name="keywords" content="" />
 
-    <title>Node Template Project</title>
+    <title>MeeGo Crash Reports</title>
 
     <!-- stylesheets -->
-    <link rel="stylesheet/less" media="screen" href="/less/dashboard.less" />
+    <link rel="stylesheet" media="screen" href="/css/screen.css" />
 
     <!-- script packages -->
     <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
@@ -35,22 +35,379 @@
 </head>
 
 <body>
-	<div id="wrap">
-        <div id="upper_header" style="display:none">
-        </div>
-
-		<div id="header">
-            <div class="toolbar_container" style="display:none">
+   <div id="header_container" class="container"> 
+    <header class="wrap"> 
+        <div id="logo"> 
+          <h3> 
+            <a href="/1.2">MeeGo | Crash Reports</a>
+            <a href="/1.2" class="hover"></a>
+          </h3> 
+        </div>  
+        
+        <div id="action">
+            <div id="session">
+                John Longername <a href="" class="ui_btn">Sign out</a>
             </div>
-		</div>
-
-		<div id="page_content">
-		</div>
-
-		<div id="footer">
+            <a href="" class="btn big">Add Report +</a>
         </div>
+        
+    </header> 
+    </div>
 
-	</div><!-- /wrap -->
+
+    <div class="container" id="page_container">
+        <div id="page" class="wrap"> 
+            <nav id="toc" class="h-navi">
+                        <ul>
+                            <li>Table of Contents:</li>
+                            <li><a href="">Overview</a></li>
+                            <li><a href="">Related Bugs &amp; Crashes</a></li>
+                            <li><a href="">Stack Trace</a></li>
+                            <li><a href="">Process State</a></li>
+                            <li><a href="">System State</a></li>
+                        </ul>
+                    </nav>
+                        
+                    <section id="overview" class="columns clearfix">
+                        <article id="crash_overview" class="column third">
+                            <h1>Crash Overview</h1>
+                            <dl>
+                                <dt>Application:</dt>
+                                <dd><a href=""><strong>/usr/bin/accountsui.launch</strong></a></dd>
+                                <dt>Executable:</dt>
+                                <dd><a href=""><strong>/usr/bin/applauncherd.bin</strong></a></dd>
+                                <dt>Date:</dt>
+                                <dd><strong>Mon Jan 17 16:12:25 EET 2011</strong></dd>
+                                <dt>Upload notes:</dt>
+                                <dd>Sent by Crash-Reporter</dd>
+                                <dt>Core Notes:</dt>
+                                <dd>(edit)</dd>
+                            </dl>
+                        </article>
+                        <article id="crash_version" class="column third">
+                            <h1>Version</h1>
+                            <dl>
+                                <dt>Component version:</dt>
+                                <dd><strong>product RM-680 hw-build 0829 version: nolo 2.0.13 boot-mode normal</strong></dd>
+                                <dt>Build:</dt>
+                                <dd><a href=""><strong>DFL61_HARMATTAN_0.2011.02-7.REQ.512960_PR_001</strong></a></dd>
+                                <dt>Product:</dt>
+                                <dd><a href=""><strong>RM-680</strong></a></dd>
+                                <dt>Week:</dt>
+                                <dd><a href=""><strong>2011.02-7.REQ.512960</strong></a></dd>
+                            </dl>
+                        </article>
+                        <article id="analysis" class="column third">
+                        <h1>Analysis <a class="help">?</a></h1>
+                        <dl class="tab4 spaced">
+                            <dt>Similar Crashes for this app:</dt>
+                            <dd><a href="" class="pullout">52</a></dd>
+                            <dt>All similar Crashes:</dt>
+                            <dd><a href="" class="pullout">213</a></dd>
+                        </dl>
+                        </article>  
+                    </section>
+                    
+                    <section class="columns divided clearfix">
+                        <article id="related_bugs" class="column third">
+                            <h1>Related Bugs <a href="" class="help">?</a></h1>
+                            <dl class="tab1 unlinkable  ee">
+                                <dt><a href="" class="bugzilla resolved"><strong>23554</strong></a></dt>
+                                <dd>Language and Time &amp; Date pages in settings menu: missing content <a href="" class="unlink">Unlink</a></dd>
+                                <dt><a href="" class="bugzilla unresolved"><strong>1238</strong></a></dt>
+                                <dd>Test case is not suitable for N900. <a href="" class="unlink">Unlink</a></dd>
+                                <dt><a href="" class="bugzilla resolved"><strong>6976</strong></a></dt>
+                                <dd>A partially Image displays when execute "qt_painting_basic" case. <a href="" class="unlink">Unlink</a></dd>
+                                <dt><a href="" class="bugzilla unresolved"><strong>4577</strong></a></dt>
+                                <dd>Video playback is not smooth <a href="" class="unlink">Unlink</a></dd>
+                            </dl>
+                            <input type="text" id="add_bug" name="add_bug" value="" /><a class="ui_btn" for="">Add new</a>
+                        </article>
+                        
+                        <article id="related_test_cases" class="column third">
+                            <h1>Related Test Cases <a href="" class="help">?</a></h1>
+                            <ul>
+                                <li><a href=""><strong>Contextkit checkpoint not defined yet</strong></a></li>
+                            </ul>
+                            <ul id="related_tcs_same_stack_trace" class="">
+                                    <em>↓ Same stack trace only</em>
+                                <li><a href="" class="secondary">OpenGL-Blit with blend and animated widgets with shadows</a></li>
+                                <li><a href="" class="secondary">Keypad works</a></li>
+                                <li><a href="" class="secondary">Check if new dates &amp; tasks could be displayed</a></li>
+                            </ul>
+                        </article>
+                        
+                        <article id="related_crashes" class="column third">
+                            <h1>Related Crashes <a href="" class="help">?</a></h1>
+                            <dl class="tab1">
+                                <dt>[15:55:15]</dt>
+                                 <dd><a href=""><strong>/usr/bin/accountsui.launch</strong></a></dd>
+                                <dt>[15:55:14]</dt>
+                                <dd><a href=""><strong>/usr/bin/applauncherd.bin</strong></a></dd>
+                                <dt>[15:55:13]</dt>
+                                <dd><a href=""><strong>cmdline</strong></a></dd>
+                                <dt>[15:55:12]</dt>
+                                <dd><a href=""><strong>oom_source</strong></a></dd>
+                            </dl>
+                        </article>
+                    </section>
+                    
+                    <section id="crash_details">
+                        <h1 class="page_divider">Crash Details <a href="" class="ui_btn download">Download core</a> <a href="" class="ui_btn download">Download rich core</a></h1>
+                        
+                        <article id="stack_trace" class="details_view">
+                            <h1>Stack Trace <a href="" class="download_link">Download</a></h1>
+                            
+                            <table class="details">
+                                <tr>
+                                    <td class="row">1</td>
+                                    <td>
+                                        <pre>0x3b5f5bb4 <a href="" class="secondary">QEventDispatcherGlib::processEvents</a>  (this=0x10df50) <a href="" class="show_source">Show source</a></pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <tr class="highlite">
+                                    <td class="row">2</td>                                                          
+                                    <td>
+                                        <pre>0x3b5f5bb4 <a href="" class="secondary">QEventDispatcherGlib::processEvents</a>  (this=0x10df50) <a href="" class="show_source">Show source</a></pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <tr>
+                                    <td class="row">3</td>                              
+                                    <td>
+                                        <pre>0x3b5f5bb4 <a href="" class="secondary">QEventDispatcherGlib::processEvents</a>  (this=0x10df50) <a href="" class="show_source">Show source</a></pre>
+                                    </td>   
+                                </tr>
+                            </table>                        
+                        </article>
+                        
+                        <article id="process_state" class="details_view">
+                            <h1>Process State</h1>
+                            
+                            <table class="details">
+                                <tr>
+                                    <th class="filename">Filename</td>
+                                    <th class="preview">Preview <a href="" class="toggle_preview show">hide</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href=""><strong>Syslog</strong></a><br/>
+                                        0.07kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+dr-xr-xr-x   2 user   users   0 Jan 17 16:12  <strong>attr</strong>
+-r--------   1 user   users   0 Jan 17 16:12  <strong>auxv</strong>
+-r--r--r--   1 user   users   0 Jan 17 16:12  <strong>cgroup</strong>
+--w-------   1 user   users   0 Jan 17 16:12  <strong>clear_refs</strong>
+                                        </pre>
+                                    </td>
+                                </tr>
+                                <tr class="even">
+                                    <td>
+                                        <a href=""><strong>ls_proc</strong></a><br/>
+                                        1.9kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+total 0
+dr-xr-xr-x    2 user     users   0 Jan 17 16:12 <strong>attr</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>auxv</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>cgroup</strong>
+--w-------    1 user     users   0 Jan 17 16:12 <strong>clear_refs</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>cmdline</strong>
+-rw-r--r--    1 user     users   0 Jan 17 16:12 <strong>coredump_filter</strong>
+lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>cwd -> /home/user</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>enviro</strong>n
+lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>exe -> /usr/bin/applauncherd.bin</strong>
+dr-x------    2 user     users   0 Jan 17 16:12 <strong>fd</strong>
+dr-x------    2 user     users   0 Jan 17 16:12 <strong>fdinfo</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>limits</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>maps</strong>
+-rw-------    1 user     users   0 Jan 17 16:12 <strong>mem</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>mountinfo</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>mounts</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>mountstats</strong>
+dr-xr-xr-x    6 user     users   0 Jan 17 16:12 <strong>net</strong>
+-rw-r--r--    1 user     users   0 Jan 17 16:12 <strong>oom_adj</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>oom_score</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>pagemap</strong>
+-r--------    1 user     users   0 Jan 17 16:12 <strong>personality</strong>
+lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>root -> /</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>smaps</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>stat</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>statm</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>status</strong>
+dr-xr-xr-x    5 user     users   0 Jan 17 16:12 <strong>task</strong>
+-r--r--r--    1 user     users   0 Jan 17 16:12 <strong>wchan</strong>
+                                        </pre>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <a href=""><strong>fd</strong></a><br/>
+                                        5.6kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+total 0
+lr-x------    1 user     users      64 Jan 17 16:12 0  -> <strong>/dev/null</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 1  -> <strong>/dev/console</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 10 -> <strong>socket:[18445]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 11 -> <strong>socket:[18447]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 12 -> <strong>socket:[18451]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 13 -> <strong>socket:[18453]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 14 -> <strong>socket:[18455]</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 15 -> <strong>inotify</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 16 -> <strong>/usr/share/contextkit/providers/cache.cdb</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 17 -> <strong>pipe:[18460]</strong>
+l-wx------    1 user     users      64 Jan 17 16:12 18 -> <strong>pipe:[18460]</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 19 -> <strong>/dev/input/event3</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 2  -> <strong>/dev/console</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 20 -> <strong>socket:[18461]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 21 -> <strong>socket:[18466]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 22 -> <strong>socket:[18467]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 23 -> <strong>socket:[19574]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 24 -> <strong>socket:[20205]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 25 -> <strong>socket:[18469]</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 28 -> <strong>/dev/urandom</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 29 -> <strong>socket:[18670]</strong>
+l-wx------    1 user     users      64 Jan 17 16:12 3  -> <strong>/var/log/applauncherd.log</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 30 -> <strong>socket:[18678]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 31 -> <strong>/home/user/.accounts/accounts.db</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 32 -> <strong>pipe:[19632]</strong>
+l-wx------    1 user     users      64 Jan 17 16:12 33 -> <strong>pipe:[19632]</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 34 -> <strong>pipe:[19637]</strong>
+l-wx------    1 user     users      64 Jan 17 16:12 35 -> <strong>pipe:[19637]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 36 -> <strong>socket:[19647]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 37 -> <strong>socket:[20695]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 38 -> <strong>socket:[21305]</strong>
+lrwx------    1 user     users      64 Jan 17 16:12 39 -> <strong>socket:[21968]</strong>
+lr-x------    1 user     users      64 Jan 17 16:12 4  -> <strong>pipe:[18406]</strong>                                     </pre>
+                                    </td>
+                                </tr>                               
+                                
+                            </table>
+                        </article>
+                        
+                        <article id="system_state" class="details_view">
+                            <h1>System State</h1>
+                            
+                            <table class="details">
+                                <tr>
+                                    <th class="filename">Filename</td>
+                                    <th class="preview">Preview <a href="" class="toggle_preview show">hide</a></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href=""><strong>df</strong></a><br/>
+                                        1.9kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+<strong>
+Filesystem         1K-blocks   Used     Available   Use%  Mounted on</strong>
+
+/dev/root          4128448     725484   3193252     19%   <strong>/</strong>
+devtmpfs           10240       248      9992        2%    <strong>/dev</strong>
+tmpfs              4096        128      3968        3%    <strong>/tmp</strong>
+tmpfs              512         100      412         20%   <strong>/var/run</strong>
+none               10240       248      9992        2%    <strong>/dev</strong>
+/dev/mmcblk0p3     1032088     25192    954468      3%    <strong>/home</strong>
+/dev/mmcblk0p1     57377408    1844160  55533248    3%    <strong>/home/user/MyDocs</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/home/user/private</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/var/tmp/wrt</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/usr/share/wrt/data/registry</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.mms/private</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/etc/wrt/security</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.odnp/private</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.odnp-fpcd/private</strong>
+aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.slpgwd/layer</strong>
+                                        </pre>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="even">
+                                    <td>
+                                        <a href=""><strong>ifconfig</strong></a><br/>
+                                        1.9kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+<strong>lo</strong>        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:13616 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:13616 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:2027261 (1.9 MiB)  TX bytes:2027261 (1.9 MiB)
+
+<strong>phonet0</strong>   Link encap:UNSPEC  HWaddr 15-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          UP POINTOPOINT RUNNING NOARP  MTU:4000  Metric:1
+          RX packets:1396 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:219 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100 
+          RX bytes:21680 (21.1 KiB)  TX bytes:3695 (3.6 KiB)
+
+<strong>wlan0</strong>     Link encap:Ethernet  HWaddr 30:38:55:A0:61:DE  
+          inet addr:192.89.6.124  Bcast:192.89.6.127  Mask:255.255.255.128
+          inet6 addr: fe80::3238:55ff:fea0:61de/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:738 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:727 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:450372 (439.8 KiB)  TX bytes:99554 (97.2 KiB)
+                                        </pre>
+                                    </td>
+                                </tr>                       
+                                        
+                                <tr>
+                                    <td>
+                                        <a href=""><strong>packagelist</strong></a><br/>
+                                        5.6kB <a class="download_link">Download</a>
+                                    </td>
+                                    <td>
+                                        <pre>
+<strong>account-plugin-caldav 0.7.1+0m6
+account-plugin-facebook 0.51+0m6
+account-plugin-flickr 0.3.1.3+0m6
+account-plugin-gmail 0.57+1rb+0m6
+account-plugin-google 0.57+1rb+0m6
+account-plugin-google-talk 0.57+1rb+0m6
+account-plugin-nokiamessaging 1.0.45+0m6
+account-plugin-ovi 0.40+0m6
+account-plugin-picasa 0.3.1.3+0m6
+account-plugin-sip 0.15+0m6
+account-plugin-skype 0.33+0m6
+account-plugin-twitter 0.1+0m6
+account-plugin-youtube 0.24+1rb+0m6
+accounts-ui 0.183-1+0m6
+adobe-flashplayer 4.0.0-61+0m6
+aegis-builder 1.4+0m6
+aegis-certman-common-ca 0.1.16+0m6
+aegis-certman-tools 0.1.16+0m6
+aegis-codesigning-ca-001 0.1+0m6+6533+0m6
+aegis-crypto-tools 0.2.9+0m6
+aegis-enabler 0.0.10+0m6
+aegis-enabler-enforce 0.0.10+0m6
+aegis-enabler-fix 0.0.10+0m6
+aegis-global-tokens 1.7+0m6</strong>
+                                        </pre>
+                                    </td>
+                                </tr>                               
+
+                                
+                            </table>
+                        </article>
+                    
+                    </section>
+                </div>
+            </div>
+    </div>
+
 
 
     <div id="hidden_templates" style="display:none">

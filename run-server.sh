@@ -14,10 +14,13 @@ Options:\n
 \t--forever stop\tStop daemonized process\n"
 
 if [ $# -eq 0 ]; then
-	$run_cmd
+    $run_cmd
 elif [ $# -eq 2 ] && [ "$1" = "--forever" ]; then
-	run_cmd=$forever" "$2" "$coffee" "$app
-	$run_cmd
+    [ -d log ] || mkdir log
+    sleep 6
+    run_cmd=$forever" "$2" -p log -c "$coffee" "$app
+    $run_cmd
+    sleep 6
 else
-	echo $usage
+    echo $usage
 fi

@@ -23,11 +23,13 @@ after "deploy:finalize_update", "deploy:install_node_packages"
 after "deploy:setup" do
   run "mkdir -p #{shared_path}/crashreport_files"
   #TODO: create shared tmp upload folder
+end
 
 after "deploy:symlink" do
   run "rm -rf #{current_path}/public/crashreport_files"
   run "ln -nfs #{shared_path}/crashreport_files #{current_path}/public/crashreport_files"
   #TODO: symlink to shared tmp upload folder
+end
 
 namespace :deploy do
   desc "Restart the app server"

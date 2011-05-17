@@ -5,12 +5,14 @@ fs    = require('fs')
 _     = require('underscore')
 async = require('async')
 
+# TODO: read from a file
+DOMAIN_NAME = "crash-reports.leonidasoy.fi"
+
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 
 # import api definition
 MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
-
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 
 validate_crashreport_fields = (fields) ->
@@ -177,7 +179,7 @@ init_import_api = (basedir, app, db) ->
                             res.send {"ok":"0","errors":err}
                             # TODO: cleanup?
                             return
-                        res.send {"ok":"1","url":"http://crash-reports.qa.leonidasoy.fi/crashreports/" + crashreport.id}
+                        res.send {"ok":"1","url":"http://#{DOMAIN_NAME}/crashreports/" + crashreport.id}
                 
 exports.init_import_api = init_import_api
 

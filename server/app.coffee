@@ -1,7 +1,7 @@
 
-express = require('express')
-http    = require('http')
-
+express    = require('express')
+http       = require('http')
+form       = require('connect-form')
 MongoStore = require('connect-mongo')
 
 create_app = (basedir, db) ->
@@ -9,7 +9,13 @@ create_app = (basedir, db) ->
     PUBLIC = basedir + "/public"
     COFFEE = basedir + "/client"
 
-    app = express.createServer()
+    FORM_OPTIONS =
+            keepExtensions : true
+            uploadDir : basedir + "/tmp" #minimum global option (default is root tmp "/tmp")
+            maxFieldsSize : 2 * 1024 * 1024
+            encoding : "utf-8"
+
+    app = express.createServer(form(FORM_OPTIONS))
 
     store = new MongoStore(db:db.cfg.dbname)
 
@@ -39,6 +45,8 @@ create_app = (basedir, db) ->
     app.configure "production", ->
         app.use express.logger()
         app.use express.errorHandler()
+
+    require('import-api').init_import_api basedir, app, db
 
     return app
 

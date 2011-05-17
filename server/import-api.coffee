@@ -6,7 +6,7 @@ _     = require('underscore')
 async = require('async')
 
 # TODO: read from a file
-DOMAIN_NAME = "crash-reports.leonidasoy.fi"
+DOMAIN_NAME = "crash-reports.qa.leonidasoy.fi"
 
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 

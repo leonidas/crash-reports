@@ -48,7 +48,7 @@ create_app = (basedir, db) ->
 
     require('import-api').init_import_api basedir, app, db
 
-    app.get "/id/:id", (req, res) ->
+    app.get "/crashreports/:id", (req, res) ->
         crashreports = db.collection('crashreports')
         crashreports.find({"id":req.params.id}).run (err,arr) ->
             return res.send {"ok":"0","errors": err} if err?

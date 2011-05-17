@@ -48,6 +48,15 @@ create_app = (basedir, db) ->
 
     require('import-api').init_import_api basedir, app, db
 
+    app.get "/id/:id", (req, res) ->
+        crashreports = db.collection('crashreports')
+        crashreports.find({"id":req.params.id}).run (err,arr) ->
+            return res.send {"ok":"0","errors": err} if err?
+            crashobjs = {}
+            for item in arr
+                crashobjs[item.id] = item
+            return res.send {"ok":"1","crashdata": JSON.stringify(crashobjs)}
+
     return app
 
 exports.create_app = create_app

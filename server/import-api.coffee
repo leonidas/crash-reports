@@ -8,11 +8,10 @@ async = require('async')
 CRASHREPORTS_FOLDER = "public/crashreports/"
 
 # import api definition
-MANDATORY_FIELDS = ["auth-token","release","product","build","id","mac"]
-OPTIONAL_FIELDS  = ["profile","imei"]
+MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
+OPTIONAL_FIELDS  = ["profile","imei","mac"]
 
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
-
 
 validate_crashreport_fields = (fields,err) ->   
     data = _.clone(fields) # validation consumes the data object
@@ -25,8 +24,7 @@ validate_crashreport_fields = (fields,err) ->
             err.push "missing attribute " + f
     
     # check optional fields
-    optional_fields  = ["profile","imei"]
-    _(optional_fields).each (f) -> delete data[f] if data[f]?
+    _(OPTIONAL_FIELDS).each (f) -> delete data[f] if data[f]?
 
     # check for unknown fields 
     _(data).each (value,fieldname) -> err.push "unknown attribute " + fieldname

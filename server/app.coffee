@@ -12,7 +12,7 @@ create_app = (basedir, db) ->
     FORM_OPTIONS =
             keepExtensions : true
             uploadDir : basedir + "/tmp" #minimum global option (default is root tmp "/tmp")
-            maxFieldsSize : 2 * 1024 * 1024
+            maxFieldsSize : 100 * 1024 * 1024
             encoding : "utf-8"
 
     app = express.createServer(form(FORM_OPTIONS))

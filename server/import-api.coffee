@@ -25,11 +25,11 @@ validate_crashreport_fields = (fields) ->
             delete data[f]
         else
             err.push "missing attribute " + f
-    
+
     # check optional fields
     _(OPTIONAL_FIELDS).each (f) -> delete data[f] if data[f]?
 
-    # check for unknown fields 
+    # check for unknown fields
     _(data).each (value,fieldname) -> err.push "unknown attribute " + fieldname
 
     err
@@ -57,13 +57,13 @@ validate_crashreport_files = (files) ->
             err.push "invalid file " + fileid + ": missing one of mandatory fields (name,path,type)"
             delete data[fileid]
 
-    # check mandatory files        
+    # check mandatory files
     _(MANDATORY_FILES).each (f) ->
         if data[f]?
             err = err.concat validate_file data[f], f
             delete data[f]
         else
-            err.push "missing attribute " + f   
+            err.push "missing attribute " + f
 
     # check optional files (attachments)
     _(data).each (property,fileid) -> delete data[fileid] if fileid.match /attachment\.\d+/i
@@ -85,7 +85,7 @@ move_files = (files, dest_dir, move_files_cb) ->
             if property.path?
 
                 #create destination filename and path
-                dest_fname = fileid + "_" + property.name
+                dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
                 dest_path  = dest_dir + "/" + dest_fname
                 #console.log "moving file: " + property.path + " to: " + dest_path #debug
 
@@ -101,10 +101,10 @@ move_files = (files, dest_dir, move_files_cb) ->
                         name: dest_fname
                         path: dest_path
                         type: property_tmp.type
-                        origname: property_tmp.name
+                        origname: property_tmp.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
                     cb null
 
-    # run file move operations 
+    # run file move operations
     async.series movefiles_func_arr, (err) ->
         return move_files_cb? err, null if err?
 
@@ -135,14 +135,14 @@ init_import_api = (basedir, app, db) ->
         # verify content type (multipart)
         contentType = req.headers['content-type']
         if not (contentType? && contentType.match(/multipart/i))
-            return res.send {"ok":"0","errors":"bad content-type header, expected multipart"}   
+            return res.send {"ok":"0","errors":"bad content-type header, expected multipart"}
 
         # TODO: check if custom form options are needed e.g.
         # req.form.uploadDir = basedir + "/tmp"
 
         req.form.complete (err, fields, files) ->
             return res.send {"ok":"0","errors":err} if err? #form parsing/upload error
-                
+
             #validate data (TODO: make async when needed, currently no IO operations)
             err = []
             err = err.concat validate_crashreport_fields(fields)
@@ -180,6 +180,6 @@ init_import_api = (basedir, app, db) ->
                             # TODO: cleanup?
                             return
                         res.send {"ok":"1","url":"http://#{DOMAIN_NAME}/crashreports/" + crashreport.id}
-                
+
 exports.init_import_api = init_import_api
 

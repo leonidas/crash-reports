@@ -1,0 +1,10 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 3040,
+    "url" : "http://localhost:3040"},
+
+  "app": {
+    "name": "crash-reports" }
+
+}

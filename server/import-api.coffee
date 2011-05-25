@@ -5,8 +5,6 @@ fs    = require('fs')
 _     = require('underscore')
 async = require('async')
 
-# TODO: read from a file
-DOMAIN_NAME = "crash-reports.qa.leonidasoy.fi"
 
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 
@@ -127,9 +125,8 @@ remove_files = (files) ->
                 console.log "remove_files error:"
                 console.log err
 
-init_import_api = (basedir, app, db) ->
+init_import_api = (settings, app, db) ->
     crashreports = db.collection('crashreports')
-
     app.post "/api/import", (req, res) ->
 
         # verify content type (multipart)
@@ -152,7 +149,7 @@ init_import_api = (basedir, app, db) ->
                 return remove_files files #cleanup after error
 
             #make crashreport file storage folder
-            storage_dir = "#{basedir}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
+            storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
             fs.mkdir storage_dir, 0755, (err) ->
                 if err? && err.code != "EEXIST"
                     res.send {"ok":"0","errors":err}
@@ -179,7 +176,7 @@ init_import_api = (basedir, app, db) ->
                             res.send {"ok":"0","errors":err}
                             # TODO: cleanup?
                             return
-                        res.send {"ok":"1","url":"http://#{DOMAIN_NAME}/crashreports/" + crashreport.id}
+                        res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
 
 exports.init_import_api = init_import_api
 

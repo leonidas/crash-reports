@@ -4,10 +4,11 @@ http       = require('http')
 form       = require('connect-form')
 MongoStore = require('connect-mongo')
 
-create_app = (basedir, db) ->
+create_app = (settings, db) ->
+    basedir = settings.app.root
 
-    PUBLIC = basedir + "/public"
-    COFFEE = basedir + "/client"
+    PUBLIC  = basedir + "/public"
+    COFFEE  = basedir + "/client"
 
     FORM_OPTIONS =
             keepExtensions : true
@@ -46,7 +47,7 @@ create_app = (basedir, db) ->
         app.use express.logger()
         app.use express.errorHandler()
 
-    require('import-api').init_import_api basedir, app, db
+    require('import-api').init_import_api settings, app, db
 
     app.get "/crashreports/:id", (req, res) ->
         crashreports = db.collection('crashreports')

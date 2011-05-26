@@ -1,13 +1,14 @@
-appname  = "crash-reports"
-hostname = "#{appname}.qa.leonidasoy.fi"
+set :app_name, "crash-reports"
+set :server_host, "#{app_name}.qa.leonidasoy.fi"
+set :server_port, 3040
 
-set :application, hostname
+set :application, server_host
 set :deploy_to, "/home/#{user}/#{application}"
 set :node_env, "staging"
 
 ssh_options[:port] = 31915
 
-server hostname, :app, :web, :db, :primary => true
+server server_host, :app, :web, :db, :primary => true
 
 namespace :db do
   desc "Import production database to staging"

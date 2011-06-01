@@ -61,7 +61,7 @@ create_app = (settings, db) ->
                 crashobjs[item.id] = item
             return res.send {"ok":"1","crashdata": crashobjs}
 
-    app.get "/crashreports", (req, res) ->
+    app.get "/", (req, res) ->
 
         crashreports = db.collection('crashreports')
         crashreports.find().run (err,arr) ->

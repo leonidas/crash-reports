@@ -1,16 +1,23 @@
-
-express = require('express')
-http    = require('http')
-stylus  = require('stylus')
-
+express    = require('express')
+http       = require('http')
+form       = require('connect-form')
+stylus      = require('stylus')
 MongoStore = require('connect-mongo')
+_          = require('underscore')
 
-create_app = (basedir, db) ->
+create_app = (settings, db) ->
+    basedir = settings.app.root
 
-    PUBLIC = basedir + "/public"
-    COFFEE = basedir + "/client"
+    PUBLIC  = basedir + "/public"
+    COFFEE  = basedir + "/client"
 
-    app = express.createServer()
+    FORM_OPTIONS =
+            keepExtensions : true
+            uploadDir : basedir + "/tmp" #minimum global option (default is root tmp "/tmp")
+            maxFieldsSize : 100 * 1024 * 1024
+            encoding : "utf-8"
+
+    app = express.createServer(form(FORM_OPTIONS))
 
     store = new MongoStore(db:db.cfg.dbname)
 
@@ -46,6 +53,36 @@ create_app = (basedir, db) ->
     app.configure "production", ->
         app.use express.logger()
         app.use express.errorHandler()
+
+    require('import-api').init_import_api settings, app, db
+
+
+    #TODO: move to own module
+    app.get "/crashreports/:id", (req, res) ->
+        crashreports = db.collection('crashreports')
+        crashreports.find({"id":req.params.id}).run (err,arr) ->
+            return res.send {"ok":"0","errors": err} if err?
+            crashobjs = {}
+            for item in arr
+                crashobjs[item.id] = item
+            return res.send {"ok":"1","crashdata": crashobjs}
+
+    app.get "/", (req, res) ->
+
+        crashreports = db.collection('crashreports')
+        crashreports.find().run (err,arr) ->
+            return res.send {"ok":"0","errors": err} if err?
+
+            body = "Crashreports index:<br>"
+            _.each arr, (item) ->
+                linkurl  = "#{settings.server.url}/crashreports/#{item.id}"
+                linktext = "#{item.product} #{item.files['rich-core'].origname}"
+                body    += "<a href=\"#{linkurl}\">#{linktext}</a><br>"
+
+            res.writeHead 200,
+              'Content-Length': body.length,
+              'Content-Type': 'text/html'
+            return res.end body
 
     return app
 

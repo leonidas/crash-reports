@@ -1,13 +1,14 @@
-appname  = "crash-reports"
-hostname = "#{appname}.leonidasoy.fi"
+set :app_name, "crash-reports"
+set :server_host, "#{app_name}.leonidasoy.fi"
+set :server_port, 3040
 
-set :application, hostname
+set :application, server_host
 set :deploy_to, "/home/#{user}/#{application}"
 set :node_env, "production"
 
 ssh_options[:port] = 43398
 
-server hostname, :app, :web, :db, :primary => true
+server server_host, :app, :web, :db, :primary => true
 
 after "deploy:symlink" do
   # Allow robots to index

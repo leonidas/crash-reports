@@ -17,20 +17,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 #
-
-PORT    = 3040
-APPNAME = "crash-reports"
+APPROOT       = __dirname
+SETTINGS_FILE = "settings.json"
 
 require.paths.unshift './node_modules'
 require.paths.push 'server'
 require.paths.push 'server/js'
 
+fs     = require('fs')
 monmon = require('monmon').monmon
 
-approot = __dirname
+settings          = JSON.parse fs.readFileSync(APPROOT + "/" + SETTINGS_FILE)
+settings.app.root = APPROOT
 
-db = monmon.use(APPNAME)
-app = require('app').create_app approot, db
+db  = monmon.use(settings.app.name)
+app = require('app').create_app settings, db
 
-app.listen(PORT)
+app.listen(settings.server.port)
 

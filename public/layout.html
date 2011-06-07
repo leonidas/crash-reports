@@ -19,6 +19,10 @@
     <script type="text/javascript" src="/js/async.min.js"></script>
     <script type="text/javascript" src="/js/pure_min.js"></script>
 
+    <!-- custom scripts -->
+    <script type="text/javascript" src="/crash_report.js"></script>
+
+
      <!-- chrome frame -->
     <script type="text/javascript"src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
 
@@ -35,28 +39,28 @@
 </head>
 
 <body>
-   <div id="header_container" class="container"> 
-    <header class="wrap"> 
-        <div id="logo"> 
-          <h3> 
+   <div id="header_container" class="container">
+    <header class="wrap">
+        <div id="logo">
+          <h3>
             <a href="/1.2">MeeGo | Crash Reports</a>
             <a href="/1.2" class="hover"></a>
-          </h3> 
-        </div>  
-        
+          </h3>
+        </div>
+
         <div id="action">
             <div id="session">
                 John Longername <a href="" class="ui_btn">Sign out</a>
             </div>
             <a href="" class="btn big">Add Report +</a>
         </div>
-        
-    </header> 
+
+    </header>
     </div>
 
 
     <div class="container" id="page_container">
-        <div id="page" class="wrap"> 
+        <div id="page" class="wrap">
             <nav id="toc" class="h-navi">
                         <ul>
                             <li>Table of Contents:</li>
@@ -67,7 +71,7 @@
                             <li><a href="">System State</a></li>
                         </ul>
                     </nav>
-                        
+
                     <section id="overview" class="columns clearfix">
                         <article id="crash_overview" class="column third">
                             <h1>Crash Overview</h1>
@@ -105,9 +109,9 @@
                             <dt>All similar Crashes:</dt>
                             <dd><a href="" class="pullout">213</a></dd>
                         </dl>
-                        </article>  
+                        </article>
                     </section>
-                    
+
                     <section class="columns divided clearfix">
                         <article id="related_bugs" class="column third">
                             <h1>Related Bugs <a href="" class="help">?</a></h1>
@@ -123,7 +127,7 @@
                             </dl>
                             <input type="text" id="add_bug" name="add_bug" value="" /><a class="ui_btn" for="">Add new</a>
                         </article>
-                        
+
                         <article id="related_test_cases" class="column third">
                             <h1>Related Test Cases <a href="" class="help">?</a></h1>
                             <ul>
@@ -136,7 +140,7 @@
                                 <li><a href="" class="secondary">Check if new dates &amp; tasks could be displayed</a></li>
                             </ul>
                         </article>
-                        
+
                         <article id="related_crashes" class="column third">
                             <h1>Related Crashes <a href="" class="help">?</a></h1>
                             <dl class="tab1">
@@ -151,13 +155,13 @@
                             </dl>
                         </article>
                     </section>
-                    
+
                     <section id="crash_details">
                         <h1 class="page_divider">Crash Details <a href="" class="ui_btn download">Download core</a> <a href="" class="ui_btn download">Download rich core</a></h1>
-                        
+
                         <article id="stack_trace" class="details_view">
                             <h1>Stack Trace <a href="" class="download_link">Download</a></h1>
-                            
+
                             <table class="details">
                                 <tr>
                                     <td class="row">1</td>
@@ -167,24 +171,24 @@
                                 </tr>
                                 <tr>
                                 <tr class="highlite">
-                                    <td class="row">2</td>                                                          
+                                    <td class="row">2</td>
                                     <td>
                                         <pre>0x3b5f5bb4 <a href="" class="secondary">QEventDispatcherGlib::processEvents</a>  (this=0x10df50) <a href="" class="show_source">Show source</a></pre>
                                     </td>
                                 </tr>
                                 <tr>
                                 <tr>
-                                    <td class="row">3</td>                              
+                                    <td class="row">3</td>
                                     <td>
                                         <pre>0x3b5f5bb4 <a href="" class="secondary">QEventDispatcherGlib::processEvents</a>  (this=0x10df50) <a href="" class="show_source">Show source</a></pre>
-                                    </td>   
+                                    </td>
                                 </tr>
-                            </table>                        
+                            </table>
                         </article>
-                        
+
                         <article id="process_state" class="details_view">
                             <h1>Process State</h1>
-                            
+
                             <table class="details">
                                 <tr>
                                     <th class="filename">Filename</td>
@@ -244,7 +248,7 @@ dr-xr-xr-x    5 user     users   0 Jan 17 16:12 <strong>task</strong>
                                         </pre>
                                     </td>
                                 </tr>
-                                
+
                                 <tr>
                                     <td>
                                         <a href=""><strong>fd</strong></a><br/>
@@ -287,14 +291,14 @@ lrwx------    1 user     users      64 Jan 17 16:12 38 -> <strong>socket:[21305]
 lrwx------    1 user     users      64 Jan 17 16:12 39 -> <strong>socket:[21968]</strong>
 lr-x------    1 user     users      64 Jan 17 16:12 4  -> <strong>pipe:[18406]</strong>                                     </pre>
                                     </td>
-                                </tr>                               
-                                
+                                </tr>
+
                             </table>
                         </article>
-                        
+
                         <article id="system_state" class="details_view">
                             <h1>System State</h1>
-                            
+
                             <table class="details">
                                 <tr>
                                     <th class="filename">Filename</td>
@@ -328,7 +332,7 @@ aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.sl
                                         </pre>
                                     </td>
                                 </tr>
-                                
+
                                 <tr class="even">
                                     <td>
                                         <a href=""><strong>ifconfig</strong></a><br/>
@@ -336,34 +340,34 @@ aegisfs            4128448     721676   3197060     18%   <strong>/home/user/.sl
                                     </td>
                                     <td>
                                         <pre>
-<strong>lo</strong>        Link encap:Local Loopback  
+<strong>lo</strong>        Link encap:Local Loopback
           inet addr:127.0.0.1  Mask:255.0.0.0
           inet6 addr: ::1/128 Scope:Host
           UP LOOPBACK RUNNING  MTU:16436  Metric:1
           RX packets:13616 errors:0 dropped:0 overruns:0 frame:0
           TX packets:13616 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0 
+          collisions:0 txqueuelen:0
           RX bytes:2027261 (1.9 MiB)  TX bytes:2027261 (1.9 MiB)
 
-<strong>phonet0</strong>   Link encap:UNSPEC  HWaddr 15-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+<strong>phonet0</strong>   Link encap:UNSPEC  HWaddr 15-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
           UP POINTOPOINT RUNNING NOARP  MTU:4000  Metric:1
           RX packets:1396 errors:0 dropped:0 overruns:0 frame:0
           TX packets:219 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:100 
+          collisions:0 txqueuelen:100
           RX bytes:21680 (21.1 KiB)  TX bytes:3695 (3.6 KiB)
 
-<strong>wlan0</strong>     Link encap:Ethernet  HWaddr 30:38:55:A0:61:DE  
+<strong>wlan0</strong>     Link encap:Ethernet  HWaddr 30:38:55:A0:61:DE
           inet addr:192.89.6.124  Bcast:192.89.6.127  Mask:255.255.255.128
           inet6 addr: fe80::3238:55ff:fea0:61de/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:738 errors:0 dropped:0 overruns:0 frame:0
           TX packets:727 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:450372 (439.8 KiB)  TX bytes:99554 (97.2 KiB)
                                         </pre>
                                     </td>
-                                </tr>                       
-                                        
+                                </tr>
+
                                 <tr>
                                     <td>
                                         <a href=""><strong>packagelist</strong></a><br/>
@@ -397,12 +401,12 @@ aegis-enabler-fix 0.0.10+0m6
 aegis-global-tokens 1.7+0m6</strong>
                                         </pre>
                                     </td>
-                                </tr>                               
+                                </tr>
 
-                                
+
                             </table>
                         </article>
-                    
+
                     </section>
                 </div>
             </div>

@@ -5,8 +5,6 @@ node_modules
 vows-js
 test-js
 npm-debug.log
-qadash.js
-public/css/dashboard.css
-public/*.js
+public/js/crash_report.js
 server/js
 log

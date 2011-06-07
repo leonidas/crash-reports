@@ -61,13 +61,15 @@ create_app = (settings, db) ->
 
     #TODO: move to own module
     app.get "/crashreports/:id", (req, res) ->
+        id = req.params.id
         crashreports = db.collection('crashreports')
-        crashreports.find({"id":req.params.id}).run (err,arr) ->
+        crashreports.find({"id":id}).run (err,arr) ->
             return res.send {"ok":"0","errors": err} if err?
-            crashobjs = {}
-            for item in arr
-                crashobjs[item.id] = item
-            return res.send {"ok":"1","crashdata": crashobjs}
+            return res.send {"ok":"0","errors": "ERROR: Crashreport not found with id:#{id}"} if arr.length == 0
+            if arr.length == 1
+                return res.send {"ok":"1","crashdata": arr[0]}
+            else
+                return res.send {"ok":"0","errors": "ERROR: Found multiple crashlogs with id:#{id}"}
 
 
     app.get "/", (req, res) ->

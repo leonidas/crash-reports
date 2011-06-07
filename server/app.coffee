@@ -9,7 +9,8 @@ create_app = (settings, db) ->
     basedir = settings.app.root
 
     PUBLIC  = basedir + "/public"
-    COFFEE  = basedir + "/client"
+    COFFEE  = basedir + "/client/coffee"
+    STYLUS  = basedir + "/client/stylus"
 
     FORM_OPTIONS =
             keepExtensions : true
@@ -24,12 +25,12 @@ create_app = (settings, db) ->
     app.configure ->
         app.use express.compiler
             src: COFFEE
-            dest: PUBLIC
+            dest: PUBLIC + '/js'
             enable: ['coffeescript']
 
         app.use stylus.middleware {
             debug: true
-            src: basedir + '/client/stylus'
+            src: STYLUS
             dest: PUBLIC
         }
 
@@ -37,6 +38,7 @@ create_app = (settings, db) ->
         app.use express.bodyParser()
         app.use express.session {secret: "TODO", store:store}
         app.use express.static PUBLIC
+        app.use express.static PUBLIC + '/js'
 
     app.configure "development", ->
         app.use express.logger()
@@ -66,6 +68,7 @@ create_app = (settings, db) ->
             for item in arr
                 crashobjs[item.id] = item
             return res.send {"ok":"1","crashdata": crashobjs}
+
 
     app.get "/", (req, res) ->
 

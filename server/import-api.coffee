@@ -4,7 +4,7 @@ util  = require('util')
 fs    = require('fs')
 _     = require('underscore')
 async = require('async')
-
+lazy  = require("lazy")
 
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 
@@ -12,6 +12,29 @@ CRASHREPORTS_FOLDER = "public/crashreport_files"
 MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
+
+parse_stack_trace = (tracefile, cb) ->
+    console.log "parsing stack trace:#{tracefile.path}" #debug
+    stack_trace = []
+    line_num = 0
+    lazy_parser = new lazy(fs.createReadStream(tracefile.path))
+
+    lazy_parser.on 'end', () ->
+        cb null,stack_trace
+
+    lazy_parser.lines
+               .forEach (line) ->
+                    line_num++
+                    stack_line = line.toString()
+                    #console.log "line(#{line_num}):" + stack_line #debug
+                    stack_trace.push(stack_line)
+    return
+
+parse_files = (files, cb) ->
+    parse_stack_trace files["stack-trace"], (err, trace_arr) ->
+        return cb err if err?
+        cb null, trace_arr #debug (early callback, only stack trace read)
+
 
 validate_crashreport_fields = (fields) ->
     err = []
@@ -180,3 +203,4 @@ init_import_api = (settings, app, db) ->
 
 exports.init_import_api = init_import_api
 
+exports.parse_files = parse_files

@@ -1,9 +1,11 @@
 express    = require('express')
 http       = require('http')
 form       = require('connect-form')
-stylus      = require('stylus')
+stylus     = require('stylus')
 MongoStore = require('connect-mongo')
 _          = require('underscore')
+import_api = require('import-api')
+
 
 create_app = (settings, db) ->
     basedir = settings.app.root
@@ -56,7 +58,7 @@ create_app = (settings, db) ->
         app.use express.logger()
         app.use express.errorHandler()
 
-    require('import-api').init_import_api settings, app, db
+    import_api.init_import_api settings, app, db
 
 
     #TODO: move to own module
@@ -88,6 +90,20 @@ create_app = (settings, db) ->
               'Content-Length': body.length,
               'Content-Type': 'text/html'
             return res.end body
+
+    # for debugging file parsing
+    app.get "/crashreports_parse/:id", (req, res) ->
+        id = req.params.id
+        crashreports = db.collection('crashreports')
+        crashreports.find({"id":id}).run (err,arr) ->
+            return res.send {"ok":"0","errors": err} if err?
+            return res.send {"ok":"0","errors": "ERROR: Crashreport not found with id:#{id}"} if arr.length == 0
+            import_api.parse_files arr[0].files, (err, result) ->
+                if err?
+                    res.send {"ok":"0","errors": err}
+                else
+                    res.send {"ok":"1","crashdata": result}
+
 
     return app
 

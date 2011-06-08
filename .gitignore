@@ -6,5 +6,6 @@ vows-js
 test-js
 npm-debug.log
 public/js/crash_report.js
+public/css
 server/js
 log

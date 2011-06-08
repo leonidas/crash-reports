@@ -22,21 +22,13 @@
 ## Module Globals
 $p = {}
 
-deepcopy = (obj) ->
-    return obj if (typeof obj) != 'object'
-
-    cp = {}
-    for k,v of obj
-        cp[k] = deepcopy v
-    return cp
-
 initialize_application = () ->
     frag = parse_fragment()
     if not frag?
         window.location = "http://" + window.location.host #redirect to index
         #TODO: redirect to search
     else
-        console.log "frag=#{frag}" #debug
+        #console.log "frag=#{frag}" #debug
         clear_crashreport()
         load_crashreport_data frag, (data) ->
             #TODO: add error handling
@@ -57,8 +49,27 @@ load_crashreport_data = (id, callback) ->
 clear_crashreport = () ->
     #TODO: clear crashreport data from layout
 
+write_link = (dom, text, link) ->
+    $dom = $(dom).find('a')
+    #TODO: add link tag if not exist
+    $dom.text text
+    $dom.attr "href", link
+
 render_crashreport = (data) ->
-    #TODO: write crashreport data to layout
+    #Overview
+    write_link '#overview_application', "NA", ""
+    write_link '#overview_executable' , "NA", ""
+    write_link '#overview_application', "NA", ""
+
+    $('#overview_date').text "NA"
+    $('#overview_upload_notes').text "-"
+    $('#overview_core_notes').text "-"
+
+    #Version
+    write_link '#version_build'  ,data.build  ,""
+    write_link '#version_product',data.product,""
+    write_link '#version_week'   ,""          ,""
+
 
 $ () ->
     CFInstall?.check()

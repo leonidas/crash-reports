@@ -22,11 +22,15 @@
 ## Module Globals
 $p = {}
 
+
+redirect_to_index = () ->
+    window.location = "http://" + window.location.host #redirect to index
+
 initialize_application = () ->
     frag = parse_fragment()
     if not frag?
-        window.location = "http://" + window.location.host #redirect to index
         #TODO: redirect to search
+        redirect_to_index()
     else
         #console.log "frag=#{frag}" #debug
         clear_crashreport()
@@ -34,6 +38,8 @@ initialize_application = () ->
             #TODO: add error handling
             if data?.crashdata
                 render_crashreport(data.crashdata)
+            else
+                redirect_to_index()
 
 parse_fragment = () ->
     frag = window.location.hash
@@ -55,7 +61,7 @@ write_link = (dom, text, link) ->
     $dom.text text
     $dom.attr "href", link
 
-render_crashreport = (data) ->
+render_crashreport = (crashreport) ->
     #Overview
     write_link '#overview_application', "NA", ""
     write_link '#overview_executable' , "NA", ""
@@ -66,10 +72,16 @@ render_crashreport = (data) ->
     $('#overview_core_notes').text "-"
 
     #Version
-    write_link '#version_build'  ,data.build  ,""
-    write_link '#version_product',data.product,""
+    write_link '#version_build'  ,crashreport.build  ,""
+    write_link '#version_product',crashreport.product,""
     write_link '#version_week'   ,""          ,""
 
+    #Download links
+    host_url  = "http://#{window.location.host}/"
+    core_url  = crashreport.files.core.path.replace(/^.*\/public\//,host_url)
+    rcore_url = crashreport.files["rich-core"].path.replace(/^.*\/public\//,host_url)
+    $('#download_core_btn').attr "href", core_url
+    $('#download_rcore_btn').attr "href", rcore_url
 
 $ () ->
     CFInstall?.check()

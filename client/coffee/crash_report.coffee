@@ -80,8 +80,11 @@ render_crashreport = (crashreport) ->
     host_url  = "http://#{window.location.host}/"
     core_url  = crashreport.files.core.path.replace(/^.*\/public\//,host_url)
     rcore_url = crashreport.files["rich-core"].path.replace(/^.*\/public\//,host_url)
+    stack_url = crashreport.files["stack-trace"].path.replace(/^.*\/public\//,host_url)
     $('#download_core_btn').attr "href", core_url
     $('#download_rcore_btn').attr "href", rcore_url
+    $('#download_stack_trace').attr "href", stack_url
+
 
 $ () ->
     CFInstall?.check()

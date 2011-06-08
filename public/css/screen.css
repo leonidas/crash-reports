@@ -219,18 +219,18 @@ h1.page_divider {
   padding: 0.8em 2.5%;
   border-top: 1px solid #d1d1d1;
 background-image: -webkit-gradient(
-          linear, 
-          left 0, 
-          left 10, 
-          from(#dfdfdf), 
+          linear,
+          left 0,
+          left 10,
+          from(#dfdfdf),
           to(#f7f7f7));
       background-image: -moz-linear-gradient(
-          center 0, 
-          #dfdfdf 0%, 
+          center 0,
+          #dfdfdf 0%,
           #f7f7f7 5%);
       background-image: -o-linear-gradient
-          center 0, 
-          #dfdfdf 0%, 
+          center 0,
+          #dfdfdf 0%,
           #f7f7f7 5%);
 }
 h2 {
@@ -1338,6 +1338,9 @@ background-image: -webkit-gradient(linear, left 0, left 20, from(#ccc), to(#f7f7
 #overview article:last-child {
   border-right: none;
 }
+#overview dd {
+  font-weight: bold;
+}
 #crash_overview {
   padding-left: 4%;
   width: 27%;
@@ -1378,7 +1381,7 @@ background-image: -webkit-gradient(
           center 8,
           #b9b9b9 0%,
           #e1e1e1 100%);
-      
+
       background-image: -o-linear-gradient(
           center 8, #b9b9b9 0%, #e1e1e1 100%)
 }
@@ -1396,7 +1399,7 @@ background-image: -webkit-gradient(
           center 8,
           #e5e5e5 0%,
           #f7f7f7 100%);
-      
+
       background-image: -o-linear-gradient(
           center 8, #e5e5e5 0%, #f7f7f7 100%);
 }

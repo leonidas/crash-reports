@@ -59,20 +59,7 @@ create_app = (settings, db) ->
         app.use express.errorHandler()
 
     import_api.init_import_api settings, app, db
-
-
-    #TODO: move to own module
-    app.get "/crashreports/:id", (req, res) ->
-        id = req.params.id
-        crashreports = db.collection('crashreports')
-        crashreports.find({"id":id}).run (err,arr) ->
-            return res.send {"ok":"0","errors": err} if err?
-            return res.send {"ok":"0","errors": "ERROR: Crashreport not found with id:#{id}"} if arr.length == 0
-            if arr.length == 1
-                return res.send {"ok":"1","crashdata": arr[0]}
-            else
-                return res.send {"ok":"0","errors": "ERROR: Found multiple crashlogs with id:#{id}"}
-
+    require('query-api' ).init_query_api settings, app, db
 
     app.get "/", (req, res) ->
 
@@ -103,7 +90,6 @@ create_app = (settings, db) ->
                     res.send {"ok":"0","errors": err}
                 else
                     res.send {"ok":"1","crashdata": result}
-
 
     return app
 

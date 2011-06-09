@@ -2,6 +2,8 @@
 lazy = require('lazy')
 temp = require('temp')
 fs   = require('fs')
+exec = require('child_process').exec
+
 
 extract_rich_core = (rcorefile, cb) ->
     fn = temp.path(suffix: '.core')

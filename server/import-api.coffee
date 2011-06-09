@@ -27,7 +27,7 @@ update_crashreport = (crashreport_new, cb) ->
         #copy fields from new crashreport replacing the old ones (does not deep copy!)
         _(crashreport_new).each (v,k) -> crashreport[k] = v
 
-        # TODO: ignore aggregate fields in validation
+        # TODO: ignore server-side added fields in validation
         #validate the crashreport
         #err = []
         #err = err.concat validate_crashreport_fields(crashreport)
@@ -43,12 +43,12 @@ update_crashreport = (crashreport_new, cb) ->
             rcoreparser.parse_rich_core crashreport.files["rich-core"], (err, rcoredata) ->
                 return cb err if err?
                 crashreport["rich-core"] = rcoredata
-                cb null, crashreport
 
-        # save_crashreport crashreport, (err) ->
-        #     return cb err if err?
-        #     console.log "debug: Update done!" #debug
-        #     cb null, crashreport
+                # save to db
+                save_crashreport crashreport, (err) ->
+                    return cb err if err?
+                    console.log "debug: Updated crashreport id:#{crashreport.id}" #debug
+                    cb null, crashreport
 
 
 save_crashreport = (crashreport, cb) ->

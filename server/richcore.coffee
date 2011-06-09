@@ -1,6 +1,7 @@
 
 lazy = require('lazy')
 temp = require('temp')
+fs   = require('fs')
 
 extract_rich_core = (rcorefile, cb) ->
     fn = temp.path(suffix: '.core')
@@ -20,7 +21,7 @@ parse_rich_core = (rcorefile, cb) ->
                cb?(err, core)
         return
 
-    lines = new lazy(fs.createReadStream path).lines
+    lines = new lazy(fs.createReadStream path)
 
     groups = group_lines(lines)
 
@@ -34,37 +35,40 @@ parse_rich_core = (rcorefile, cb) ->
             switch g.name
                 when 'date' then core.date = parse_core_date g.lines[0]
 
-    groups.on 'end', () -> cb? null, core
+    groups.on 'end', () ->
+        cb? null, core
 
 
-date_regexp = /(\w+)\s(\w+)\s(\d+)\s([0-9:]+)\s([A-Z]+)\s(\d+)/
+date_regexp = /(\w+)\s+(\w+)\s+(\d+)\s+([0-9:]+)\s+([A-Z]+)\s+(\d+)/
 parse_core_date = (d) ->
     match = date_regexp.exec(d)
     [_, weekday, month, day, time, timezone, year] = match
     return new Date("#{weekday} #{month} #{day} #{year} #{time} (#{timezone})")
 
 
-group_lines = (lines) ->
+group_lines = (lz) ->
     parser = new lazy()
 
-    group =
-        name: undefined
-        lines: []
+    group = null
 
-    header = /[---rich-core: (.*)---]/
+    header = /\[---rich-core\: (.*)---\]/
 
-    lines.forEach (x) ->
+    lz.lines.forEach (x) ->
+        x = x.toString().trim()
         match = header.exec(x)
         if match?
             name = match[1]
-            parser.emit('data', group)
+            if group?
+                parser.emit('data', group)
             group =
                 name: name
                 lines: []
         else
-            group.lines.push(x)
+            group.lines.push(x) if group?
 
-    lines.on 'end', () ->
+    lz.on 'end', () ->
         parser.end()
+
+    return parser
 
 exports.parse_rich_core = parse_rich_core

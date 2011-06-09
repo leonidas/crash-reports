@@ -15,34 +15,63 @@ MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 
 parse_stack_trace = (tracefile, cb) ->
     console.log "parsing stack trace:#{tracefile.path}" #debug
-    stack_trace = []
-    registers   = {}
-    parse_state = "stack" #assumes file begins with stack traces
-    lazy_parser = new lazy(fs.createReadStream(tracefile.path))
+    stack_trace =
+        "registers"  : {}
+        "crashstack" : []
+        "threads"    : {}
+
+    curr_thread  = {}
+    parse_state  = "initial"
+
+    lazy_parser  = new lazy(fs.createReadStream(tracefile.path))
 
     lazy_parser.on 'end', () ->
-        cb null,
-            "stack_trace": stack_trace
-            "registers"  : registers
+        cb null, stack_trace
 
     lazy_parser.lines
-               .forEach (line) ->
-                    stack_line = line.toString()
+               .forEach (line_obj) ->
+                    line = line_obj.toString()
 
-                    parse_state = "ignore" if stack_line.match(/^\s*$/) && parse_state == "registers"
-                    parse_state = "registers" if stack_line.match /^Registers\:/
+                    console.log "state=#{parse_state}" #debug
 
-                    if parse_state == "stack" && !stack_line.match /^\s*$/ #ignores empty rows between stacks
-                        type = "note"
-                        type = "stack_item" if stack_line.match /^\#\d+\s+.*$/
-                        stack_trace.push
-                            "type": type
-                            "data": stack_line
-
-                    if parse_state == "registers" && stack_line.match /^(\w+)\s+([0-9A-Fa-fx]+)\s+(\d+)$/ # e.g. "r7 0xa8 168"
-                        registers[RegExp.$1] =
-                            "hex": RegExp.$2
-                            "dec": RegExp.$3
+                    switch parse_state
+                        when "initial"
+                          stack_trace.crash_reason = line #assumes first line is crash reason
+                          parse_state = "crashstack"
+                        when "crashstack"
+                            # end of stack?
+                            if line.match /^\s*$/
+                                parse_state = "next"
+                            # stack items
+                            else
+                                stack_trace.crashstack.push line
+                        when "next"
+                            # registers next?
+                            if line.match /^Registers\:/
+                                parse_state = "registers"
+                            # new stack trace?
+                            else if line.match /^(Thread\s\d+)\s+\(\w+\s(\d+)\)/
+                                curr_thread = stack_trace.threads[RegExp.$1] =
+                                    "thread_id": RegExp.$2
+                                    "stack"    : []
+                                parse_state = "stack"
+                        when "stack"
+                            # end of stack?
+                            if line.match /^\s*$/
+                                curr_thread = {}
+                                parse_state = "next"
+                            # stack items
+                            else
+                                curr_thread.stack.push line
+                        when "registers"
+                            # register value?
+                            if line.match /^(\w+)\s+([0-9A-Fa-fx]+)\s+(\d+)$/ # e.g. "r7 0xa8 168"
+                                stack_trace.registers[RegExp.$1] =
+                                    "hex": RegExp.$2
+                                    "dec": RegExp.$3
+                            # end
+                            else
+                                parse_state = "end"
 
 parse_files = (files, cb) ->
     parse_stack_trace files["stack-trace"], (err, trace_arr) ->

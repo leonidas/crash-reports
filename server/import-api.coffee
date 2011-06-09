@@ -4,6 +4,7 @@ util        = require('util')
 fs          = require('fs')
 _           = require('underscore')
 async       = require('async')
+rcoreparser = require('richcore')
 stackparser = require('stack-trace')
 query_api   = require('query-api')
 
@@ -16,11 +17,6 @@ MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 
 # module globals
 DB_CRASHREPORTS  = "" #crashreport collection in db, set by init function
-
-parse_files = (files, cb) ->
-    stackparser.parse_stack_trace_file files["stack-trace"].path, (err, trace_arr) ->
-        return cb err if err?
-        cb null, trace_arr #debug (early callback, only stack trace read)
 
 
 update_crashreport = (crashreport_new, cb) ->
@@ -44,8 +40,10 @@ update_crashreport = (crashreport_new, cb) ->
             crashreport["stack-trace"] = stackdata
 
             #parse rcore
-            # TODO
-            cb null, crashreport
+            rcoreparser.parse_rich_core crashreport.files["rich-core"], (err, rcoredata) ->
+                return cb err if err?
+                crashreport["rich-core"] = rcoredata
+                cb null, crashreport
 
         # save_crashreport crashreport, (err) ->
         #     return cb err if err?
@@ -203,32 +201,39 @@ init_import_api = (settings, app, db) ->
                     return remove_files files #cleanup
                 fields["stack-trace"] = stackdata
 
-                #make crashreport file storage folder
-                storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
-                fs.mkdir storage_dir, 0755, (err) ->
-                    if err? && err.code != "EEXIST"
+                #parse rich-core
+                rcoreparser.parse_rich_core files["rich-core"], (err, rcoredata) ->
+                    if err?
                         res.send {"ok":"0","errors":err}
-                        return remove_files files #cleanup after error
+                        return remove_files files #cleanup
+                    fields["rich-core"] = rcoredata
 
-                    # move files to storage folder
-                    move_files files, storage_dir, (err, stored_files) ->
-                        if err?
+                    #make crashreport file storage folder
+                    storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
+                    fs.mkdir storage_dir, 0755, (err) ->
+                        if err? && err.code != "EEXIST"
                             res.send {"ok":"0","errors":err}
                             return remove_files files #cleanup after error
 
-                        # create crashreport collection
-                        crashreport = {}
-                        _(fields).each (v,k) -> crashreport[k] = v
-                        crashreport.files = stored_files
-                        # TODO: put attachment files into an array
-
-                        #console.log "Crashreport: " + util.inspect(crashreport) #debug
-
-                        # store to mongodb
-                        save_crashreport crashreport, (err) ->
+                        # move files to storage folder
+                        move_files files, storage_dir, (err, stored_files) ->
                             if err?
-                                return res.send {"ok":"0","errors":err} #TODO: cleanup?
-                            res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
+                                res.send {"ok":"0","errors":err}
+                                return remove_files files #cleanup after error
+
+                            # create crashreport collection
+                            crashreport = {}
+                            _(fields).each (v,k) -> crashreport[k] = v
+                            crashreport.files = stored_files
+                            # TODO: put attachment files into an array and replace /\./,'_'
+
+                            #console.log "Crashreport: " + util.inspect(crashreport) #debug
+
+                            # store to mongodb
+                            save_crashreport crashreport, (err) ->
+                                if err?
+                                    return res.send {"ok":"0","errors":err} #TODO: cleanup?
+                                res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
 
 
 exports.init_import_api = init_import_api

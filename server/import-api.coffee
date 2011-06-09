@@ -5,6 +5,7 @@ fs          = require('fs')
 _           = require('underscore')
 async       = require('async')
 stackparser = require('stack-trace')
+query_api   = require('query-api')
 
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 
@@ -20,6 +21,37 @@ parse_files = (files, cb) ->
     stackparser.parse_stack_trace_file files["stack-trace"].path, (err, trace_arr) ->
         return cb err if err?
         cb null, trace_arr #debug (early callback, only stack trace read)
+
+
+update_crashreport = (crashreport_new, cb) ->
+    # get old crashreport from db
+    query_api.get_crashreport_by_id crashreport_new.id, (err, crashreport) ->
+        return cb err if err?
+
+        #copy fields from new crashreport replacing the old ones (does not deep copy!)
+        _(crashreport_new).each (v,k) -> crashreport[k] = v
+
+        # TODO: ignore aggregate fields in validation
+        #validate the crashreport
+        #err = []
+        #err = err.concat validate_crashreport_fields(crashreport)
+        #err = err.concat validate_crashreport_files(crashreport.files)
+        #return cb err.join() if not _.isEmpty(err)
+
+        #parse stack-trace
+        stackparser.parse_stack_trace_file crashreport.files["stack-trace"].path, (err, stackdata) ->
+            return cb err if err?
+            crashreport["stack-trace"] = stackdata
+
+            #parse rcore
+            # TODO
+            cb null, crashreport
+
+        # save_crashreport crashreport, (err) ->
+        #     return cb err if err?
+        #     console.log "debug: Update done!" #debug
+        #     cb null, crashreport
+
 
 save_crashreport = (crashreport, cb) ->
     q = DB_CRASHREPORTS.find({'id':crashreport.id}).upsert().update(crashreport)
@@ -156,7 +188,7 @@ init_import_api = (settings, app, db) ->
         req.form.complete (err, fields, files) ->
             return res.send {"ok":"0","errors":err} if err? #form parsing/upload error
 
-            #validate data (TODO: make async when needed, currently no IO operations)
+            #validate data (TODO: wrap validation into one function)
             err = []
             err = err.concat validate_crashreport_fields(fields)
             err = err.concat validate_crashreport_files(files)
@@ -200,5 +232,4 @@ init_import_api = (settings, app, db) ->
 
 
 exports.init_import_api = init_import_api
-
-exports.parse_files = parse_files
+exports.update_crashreport = update_crashreport

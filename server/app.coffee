@@ -5,7 +5,7 @@ stylus     = require('stylus')
 MongoStore = require('connect-mongo')
 _          = require('underscore')
 import_api = require('import-api')
-
+query_api  = require('query-api')
 
 create_app = (settings, db) ->
     basedir = settings.app.root
@@ -59,7 +59,7 @@ create_app = (settings, db) ->
         app.use express.errorHandler()
 
     import_api.init_import_api settings, app, db
-    require('query-api' ).init_query_api settings, app, db
+    query_api.init_query_api settings, app, db
 
     app.get "/", (req, res) ->
 
@@ -78,18 +78,14 @@ create_app = (settings, db) ->
               'Content-Type': 'text/html'
             return res.end body
 
-    # for debugging file parsing
+    # for debugging crashreport parsing
     app.get "/crashreports_parse/:id", (req, res) ->
         id = req.params.id
-        crashreports = db.collection('crashreports')
-        crashreports.find({"id":id}).run (err,arr) ->
+        query_api.get_crashreport_by_id id, (err,crashreport_orig) ->
             return res.send {"ok":"0","errors": err} if err?
-            return res.send {"ok":"0","errors": "ERROR: Crashreport not found with id:#{id}"} if arr.length == 0
-            import_api.parse_files arr[0].files, (err, result) ->
-                if err?
-                    res.send {"ok":"0","errors": err}
-                else
-                    res.send {"ok":"1","crashdata": result}
+            import_api.update_crashreport crashreport_orig, (err, crashreport) ->
+                return res.send {"ok":"0","errors": err} if err?
+                res.send {"ok":"1","crashdata": crashreport}
 
     return app
 

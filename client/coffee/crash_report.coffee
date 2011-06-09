@@ -63,18 +63,24 @@ write_link = (dom, text, link) ->
 
 render_crashreport = (crashreport) ->
     #Overview
-    write_link '#overview_application', "NA", ""
-    write_link '#overview_executable' , "NA", ""
-    write_link '#overview_application', "NA", ""
+    write_link '#overview_application', crashreport["rich-core"].cmdline.replace(/.*\//,''), "/"
+    write_link '#overview_executable' , crashreport["rich-core"].cmdline, ""
 
-    $('#overview_date').text "NA"
+    crashdate = new Date(crashreport["rich-core"].date)
+    #$('#overview_date').text new Date(crashreport["rich-core"].date)
+    $('#overview_date').text crashdate.toUTCString()
     $('#overview_upload_notes').text "-"
     $('#overview_core_notes').text "-"
 
     #Version
-    write_link '#version_build'  ,crashreport.build  ,""
+    $('#version_component').text "product #{crashreport.product} version: #{crashreport.release}"
+    write_link '#version_build',crashreport.build,""
     write_link '#version_product',crashreport.product,""
-    write_link '#version_week'   ,""          ,""
+    write_link '#version_week',"",""
+
+    #Analysis
+    $('#app_similar_crashes_num').text "-"
+    $('#all_similar_crashes_num').text "-"
 
     #Download links
     host_url  = "http://#{window.location.host}/"
@@ -84,7 +90,6 @@ render_crashreport = (crashreport) ->
     $('#download_core_btn').attr "href", core_url
     $('#download_rcore_btn').attr "href", rcore_url
     $('#download_stack_trace').attr "href", stack_url
-
 
 $ () ->
     CFInstall?.check()

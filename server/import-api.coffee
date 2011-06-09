@@ -13,10 +13,22 @@ MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 
+# module globals
+DB_CRASHREPORTS  = "" #crashreport collection in db, set by init function
+
 parse_files = (files, cb) ->
     stackparser.parse_stack_trace_file files["stack-trace"].path, (err, trace_arr) ->
         return cb err if err?
         cb null, trace_arr #debug (early callback, only stack trace read)
+
+
+save_crashreport = (crashreport, cb) ->
+    q = DB_CRASHREPORTS.find({'id':crashreport.id}).upsert().update(crashreport)
+    q.run (err) ->
+        if err?
+            cb err
+        else
+            cb null
 
 validate_crashreport_fields = (fields) ->
     err = []
@@ -131,7 +143,7 @@ remove_files = (files) ->
                 console.log err
 
 init_import_api = (settings, app, db) ->
-    crashreports = db.collection('crashreports')
+    DB_CRASHREPORTS = db.collection('crashreports')
     app.post "/api/import", (req, res) ->
 
         # verify content type (multipart)
@@ -175,13 +187,11 @@ init_import_api = (settings, app, db) ->
                     #console.log "Crashreport: " + util.inspect(crashreport) #debug
 
                     # store to mongodb
-                    q = crashreports.find({'id':crashreport.id}).upsert().update(crashreport)
-                    q.run (err) ->
+                    save_crashreport crashreport, (err) ->
                         if err?
-                            res.send {"ok":"0","errors":err}
-                            # TODO: cleanup?
-                            return
+                            return res.send {"ok":"0","errors":err} #TODO: cleanup?
                         res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
+
 
 exports.init_import_api = init_import_api
 

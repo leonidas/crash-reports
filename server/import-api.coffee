@@ -16,19 +16,33 @@ MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 parse_stack_trace = (tracefile, cb) ->
     console.log "parsing stack trace:#{tracefile.path}" #debug
     stack_trace = []
-    line_num = 0
+    registers   = {}
+    parse_state = "stack" #assumes file begins with stack traces
     lazy_parser = new lazy(fs.createReadStream(tracefile.path))
 
     lazy_parser.on 'end', () ->
-        cb null,stack_trace
+        cb null,
+            "stack_trace": stack_trace
+            "registers"  : registers
 
     lazy_parser.lines
                .forEach (line) ->
-                    line_num++
                     stack_line = line.toString()
-                    #console.log "line(#{line_num}):" + stack_line #debug
-                    stack_trace.push(stack_line)
-    return
+
+                    parse_state = "ignore" if stack_line.match(/^\s*$/) && parse_state == "registers"
+                    parse_state = "registers" if stack_line.match /^Registers\:/
+
+                    if parse_state == "stack" && !stack_line.match /^\s*$/ #ignores empty rows between stacks
+                        type = "note"
+                        type = "stack_item" if stack_line.match /^\#\d+\s+.*$/
+                        stack_trace.push
+                            "type": type
+                            "data": stack_line
+
+                    if parse_state == "registers" && stack_line.match /^(\w+)\s+([0-9A-Fa-fx]+)\s+(\d+)$/ # e.g. "r7 0xa8 168"
+                        registers[RegExp.$1] =
+                            "hex": RegExp.$2
+                            "dec": RegExp.$3
 
 parse_files = (files, cb) ->
     parse_stack_trace files["stack-trace"], (err, trace_arr) ->

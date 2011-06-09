@@ -21,7 +21,6 @@ parse_files = (files, cb) ->
         return cb err if err?
         cb null, trace_arr #debug (early callback, only stack trace read)
 
-
 save_crashreport = (crashreport, cb) ->
     q = DB_CRASHREPORTS.find({'id':crashreport.id}).upsert().update(crashreport)
     q.run (err) ->
@@ -165,32 +164,39 @@ init_import_api = (settings, app, db) ->
                 res.send {"ok":"0","errors":err.join()}
                 return remove_files files #cleanup after error
 
-            #make crashreport file storage folder
-            storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
-            fs.mkdir storage_dir, 0755, (err) ->
-                if err? && err.code != "EEXIST"
+            #parse stack-trace file
+            stackparser.parse_stack_trace_file files["stack-trace"].path, (err, stackdata) ->
+                if err?
                     res.send {"ok":"0","errors":err}
-                    return remove_files files #cleanup after error
+                    return remove_files files #cleanup
+                fields["stack-trace"] = stackdata
 
-                # move files to storage folder
-                move_files files, storage_dir, (err, stored_files) ->
-                    if err?
+                #make crashreport file storage folder
+                storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
+                fs.mkdir storage_dir, 0755, (err) ->
+                    if err? && err.code != "EEXIST"
                         res.send {"ok":"0","errors":err}
                         return remove_files files #cleanup after error
 
-                    # create crashreport collection
-                    crashreport = {}
-                    _(fields).each (v,k) -> crashreport[k] = v
-                    crashreport.files = stored_files
-                    # TODO: put attachment files into an array
-
-                    #console.log "Crashreport: " + util.inspect(crashreport) #debug
-
-                    # store to mongodb
-                    save_crashreport crashreport, (err) ->
+                    # move files to storage folder
+                    move_files files, storage_dir, (err, stored_files) ->
                         if err?
-                            return res.send {"ok":"0","errors":err} #TODO: cleanup?
-                        res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
+                            res.send {"ok":"0","errors":err}
+                            return remove_files files #cleanup after error
+
+                        # create crashreport collection
+                        crashreport = {}
+                        _(fields).each (v,k) -> crashreport[k] = v
+                        crashreport.files = stored_files
+                        # TODO: put attachment files into an array
+
+                        #console.log "Crashreport: " + util.inspect(crashreport) #debug
+
+                        # store to mongodb
+                        save_crashreport crashreport, (err) ->
+                            if err?
+                                return res.send {"ok":"0","errors":err} #TODO: cleanup?
+                            res.send {"ok":"1","url":"#{settings.server.url}/crashreports/" + crashreport.id}
 
 
 exports.init_import_api = init_import_api

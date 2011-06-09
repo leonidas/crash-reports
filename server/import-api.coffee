@@ -1,10 +1,10 @@
 
-http  = require('http')
-util  = require('util')
-fs    = require('fs')
-_     = require('underscore')
-async = require('async')
-lazy  = require("lazy")
+http        = require('http')
+util        = require('util')
+fs          = require('fs')
+_           = require('underscore')
+async       = require('async')
+stackparser = require('stack-trace')
 
 CRASHREPORTS_FOLDER = "public/crashreport_files"
 
@@ -13,71 +13,10 @@ MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
 
-parse_stack_trace = (tracefile, cb) ->
-    console.log "parsing stack trace:#{tracefile.path}" #debug
-    stack_trace =
-        "registers"  : {}
-        "crashstack" : []
-        "threads"    : {}
-
-    curr_thread  = {}
-    parse_state  = "initial"
-
-    lazy_parser  = new lazy(fs.createReadStream(tracefile.path))
-
-    lazy_parser.on 'end', () ->
-        cb null, stack_trace
-
-    lazy_parser.lines
-               .forEach (line_obj) ->
-                    line = line_obj.toString()
-
-                    console.log "state=#{parse_state}" #debug
-
-                    switch parse_state
-                        when "initial"
-                          stack_trace.crash_reason = line #assumes first line is crash reason
-                          parse_state = "crashstack"
-                        when "crashstack"
-                            # end of stack?
-                            if line.match /^\s*$/
-                                parse_state = "next"
-                            # stack items
-                            else
-                                stack_trace.crashstack.push line
-                        when "next"
-                            # registers next?
-                            if line.match /^Registers\:/
-                                parse_state = "registers"
-                            # new stack trace?
-                            else if line.match /^(Thread\s\d+)\s+\(\w+\s(\d+)\)/
-                                curr_thread = stack_trace.threads[RegExp.$1] =
-                                    "thread_id": RegExp.$2
-                                    "stack"    : []
-                                parse_state = "stack"
-                        when "stack"
-                            # end of stack?
-                            if line.match /^\s*$/
-                                curr_thread = {}
-                                parse_state = "next"
-                            # stack items
-                            else
-                                curr_thread.stack.push line
-                        when "registers"
-                            # register value?
-                            if line.match /^(\w+)\s+([0-9A-Fa-fx]+)\s+(\d+)$/ # e.g. "r7 0xa8 168"
-                                stack_trace.registers[RegExp.$1] =
-                                    "hex": RegExp.$2
-                                    "dec": RegExp.$3
-                            # end
-                            else
-                                parse_state = "end"
-
 parse_files = (files, cb) ->
-    parse_stack_trace files["stack-trace"], (err, trace_arr) ->
+    stackparser.parse_stack_trace_file files["stack-trace"].path, (err, trace_arr) ->
         return cb err if err?
         cb null, trace_arr #debug (early callback, only stack trace read)
-
 
 validate_crashreport_fields = (fields) ->
     err = []

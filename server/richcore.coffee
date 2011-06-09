@@ -1,10 +1,26 @@
 
 lazy = require('lazy')
+temp = require('temp')
+
+extract_rich_core = (rcorefile, cb) ->
+    fn = temp.path(suffix: '.core')
+    cmd = "lzop -d #{rcorefile.path} -o#{fn}"
+    exec cmd, (err, stdout, stderr) ->
+        cb?(err, {path: fn})
 
 parse_rich_core = (rcorefile, cb) ->
     console.log "parsing rich core: #{rcorefile.path}"
+    path = rcorefile.path
 
-    lines = new lazy(fs.createReadStream rcorefile.path).lines
+    if /\.lzo$/.test(path)
+        extract_rich_core rcorefile, (err, corefile) ->
+            return cb? err if err?
+            parse_rich_core corefile, (err, core) ->
+               fs.unlink(corefile.path)
+               cb?(err, core)
+        return
+
+    lines = new lazy(fs.createReadStream path).lines
 
     groups = group_lines(lines)
 
@@ -18,7 +34,7 @@ parse_rich_core = (rcorefile, cb) ->
             switch g.name
                 when 'date' then core.date = parse_core_date g.lines[0]
 
-    groups.on 'end', () -> cb? core
+    groups.on 'end', () -> cb? null, core
 
 
 date_regexp = /(\w+)\s(\w+)\s(\d+)\s([0-9:]+)\s([A-Z]+)\s(\d+)/

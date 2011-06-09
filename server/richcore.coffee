@@ -35,7 +35,11 @@ parse_rich_core = (rcorefile, cb) ->
                 cmdline: g.lines[0]
         else
             switch g.name
-                when 'date' then core.date = parse_core_date g.lines[0]
+                when 'date'     then core.date = parse_core_date g.lines[0]
+                when 'ls_proc'  then core.ls_proc = g.lines
+                when 'fd'       then core.fd = g.lines
+                when 'df'       then core.df = g.lines
+                when 'ifconfig' then core.ifconfig = g.lines
 
     groups.on 'end', () ->
         cb? null, core

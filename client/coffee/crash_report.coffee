@@ -79,6 +79,7 @@ render_process_state = (crashreport) ->
 
 render_stacktrace = (crashreport) ->
     #TODO
+    $('#stack_trace_content').empty()
 
 render_crashreport = (crashreport) ->
     #Overview

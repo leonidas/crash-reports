@@ -162,7 +162,7 @@
                         <article id="stack_trace" class="details_view">
                             <h1>Stack Trace <a href="" id="download_stack_trace" class="download_link">Download</a></h1>
 
-                            <table class="details">
+                            <table id="stack_trace_content" class="details">
                                 <tr>
                                     <td class="row">1</td>
                                     <td>
@@ -196,100 +196,25 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href=""><strong>Syslog</strong></a><br/>
-                                        0.07kB <a class="download_link">Download</a>
-                                    </td>
-                                    <td>
-                                        <pre>
-dr-xr-xr-x   2 user   users   0 Jan 17 16:12  <strong>attr</strong>
--r--------   1 user   users   0 Jan 17 16:12  <strong>auxv</strong>
--r--r--r--   1 user   users   0 Jan 17 16:12  <strong>cgroup</strong>
---w-------   1 user   users   0 Jan 17 16:12  <strong>clear_refs</strong>
-                                        </pre>
-                                    </td>
-                                </tr>
-                                <tr class="even">
-                                    <td>
                                         <a href=""><strong>ls_proc</strong></a><br/>
-                                        1.9kB <a class="download_link">Download</a>
+                                        <a class="download_link">Download</a>
                                     </td>
-                                    <td>
+                                    <td id="ls_proc_content">
                                         <pre>
-total 0
-dr-xr-xr-x    2 user     users   0 Jan 17 16:12 <strong>attr</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>auxv</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>cgroup</strong>
---w-------    1 user     users   0 Jan 17 16:12 <strong>clear_refs</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>cmdline</strong>
--rw-r--r--    1 user     users   0 Jan 17 16:12 <strong>coredump_filter</strong>
-lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>cwd -> /home/user</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>enviro</strong>n
-lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>exe -> /usr/bin/applauncherd.bin</strong>
-dr-x------    2 user     users   0 Jan 17 16:12 <strong>fd</strong>
-dr-x------    2 user     users   0 Jan 17 16:12 <strong>fdinfo</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>limits</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>maps</strong>
--rw-------    1 user     users   0 Jan 17 16:12 <strong>mem</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>mountinfo</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>mounts</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>mountstats</strong>
-dr-xr-xr-x    6 user     users   0 Jan 17 16:12 <strong>net</strong>
--rw-r--r--    1 user     users   0 Jan 17 16:12 <strong>oom_adj</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>oom_score</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>pagemap</strong>
--r--------    1 user     users   0 Jan 17 16:12 <strong>personality</strong>
-lrwxrwxrwx    1 user     users   0 Jan 17 16:12 <strong>root -> /</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>smaps</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>stat</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>statm</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>status</strong>
-dr-xr-xr-x    5 user     users   0 Jan 17 16:12 <strong>task</strong>
--r--r--r--    1 user     users   0 Jan 17 16:12 <strong>wchan</strong>
+not available
                                         </pre>
                                     </td>
                                 </tr>
 
-                                <tr>
+                                <tr class="even">
                                     <td>
                                         <a href=""><strong>fd</strong></a><br/>
-                                        5.6kB <a class="download_link">Download</a>
+                                        <a class="download_link">Download</a>
                                     </td>
-                                    <td>
+                                    <td id="fd_content">
                                         <pre>
-total 0
-lr-x------    1 user     users      64 Jan 17 16:12 0  -> <strong>/dev/null</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 1  -> <strong>/dev/console</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 10 -> <strong>socket:[18445]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 11 -> <strong>socket:[18447]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 12 -> <strong>socket:[18451]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 13 -> <strong>socket:[18453]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 14 -> <strong>socket:[18455]</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 15 -> <strong>inotify</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 16 -> <strong>/usr/share/contextkit/providers/cache.cdb</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 17 -> <strong>pipe:[18460]</strong>
-l-wx------    1 user     users      64 Jan 17 16:12 18 -> <strong>pipe:[18460]</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 19 -> <strong>/dev/input/event3</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 2  -> <strong>/dev/console</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 20 -> <strong>socket:[18461]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 21 -> <strong>socket:[18466]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 22 -> <strong>socket:[18467]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 23 -> <strong>socket:[19574]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 24 -> <strong>socket:[20205]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 25 -> <strong>socket:[18469]</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 28 -> <strong>/dev/urandom</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 29 -> <strong>socket:[18670]</strong>
-l-wx------    1 user     users      64 Jan 17 16:12 3  -> <strong>/var/log/applauncherd.log</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 30 -> <strong>socket:[18678]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 31 -> <strong>/home/user/.accounts/accounts.db</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 32 -> <strong>pipe:[19632]</strong>
-l-wx------    1 user     users      64 Jan 17 16:12 33 -> <strong>pipe:[19632]</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 34 -> <strong>pipe:[19637]</strong>
-l-wx------    1 user     users      64 Jan 17 16:12 35 -> <strong>pipe:[19637]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 36 -> <strong>socket:[19647]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 37 -> <strong>socket:[20695]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 38 -> <strong>socket:[21305]</strong>
-lrwx------    1 user     users      64 Jan 17 16:12 39 -> <strong>socket:[21968]</strong>
-lr-x------    1 user     users      64 Jan 17 16:12 4  -> <strong>pipe:[18406]</strong>                                     </pre>
+not available
+                                        </pre>
                                     </td>
                                 </tr>
 

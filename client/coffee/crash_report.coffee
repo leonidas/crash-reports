@@ -22,7 +22,6 @@
 ## Module Globals
 $p = {}
 
-
 redirect_to_index = () ->
     window.location = "http://" + window.location.host #redirect to index
 
@@ -35,7 +34,6 @@ initialize_application = () ->
         #console.log "frag=#{frag}" #debug
         clear_crashreport()
         load_crashreport_data frag, (data) ->
-            #TODO: add error handling
             if data?.crashdata
                 render_crashreport(data.crashdata)
             else
@@ -61,10 +59,32 @@ write_link = (dom, text, link) ->
     $dom.text text
     $dom.attr "href", link
 
+parse_ls_list = (ls_list) ->
+    ls_list = _(ls_list).map (line) ->
+        return line if !line.match /^[dlrwx-]{10}\s/
+        arr = line.split /\s/
+        arr[arr.length-1] = "<strong>#{arr[arr.length-1]}</strong>"
+        arr.join ' '
+    return ls_list.join('\n')
+
+render_process_state = (crashreport) ->
+
+    if crashreport["rich-core"].ls_proc?
+        ls_proc = parse_ls_list crashreport["rich-core"].ls_proc
+        $('#ls_proc_content pre').html ls_proc
+        #console.log ls_proc
+    if crashreport["rich-core"].fd?
+        fd = parse_ls_list crashreport["rich-core"].fd
+        $('#fd_content pre').html fd
+
+render_stacktrace = (crashreport) ->
+    #TODO
+
 render_crashreport = (crashreport) ->
     #Overview
-    write_link '#overview_application', crashreport["rich-core"].cmdline.replace(/.*\//,''), "/"
-    write_link '#overview_executable' , crashreport["rich-core"].cmdline, ""
+    application = crashreport["rich-core"].cmdline.replace(/\s+.*$/,'').replace(/^.*\//,'')
+    write_link '#overview_application', application, window.location.href
+    write_link '#overview_executable' , crashreport["rich-core"].cmdline, window.location.href
 
     crashdate = new Date(crashreport["rich-core"].date)
     #$('#overview_date').text new Date(crashreport["rich-core"].date)
@@ -74,9 +94,9 @@ render_crashreport = (crashreport) ->
 
     #Version
     $('#version_component').text "product #{crashreport.product} version: #{crashreport.release}"
-    write_link '#version_build',crashreport.build,""
-    write_link '#version_product',crashreport.product,""
-    write_link '#version_week',"",""
+    write_link '#version_build',crashreport.build, window.location.href
+    write_link '#version_product',crashreport.product, window.location.href
+    write_link '#version_week',"", window.location.href
 
     #Analysis
     $('#app_similar_crashes_num').text "-"
@@ -90,6 +110,12 @@ render_crashreport = (crashreport) ->
     $('#download_core_btn').attr "href", core_url
     $('#download_rcore_btn').attr "href", rcore_url
     $('#download_stack_trace').attr "href", stack_url
+
+    #Stack
+    render_stacktrace crashreport
+
+    #Process state
+    render_process_state crashreport
 
 $ () ->
     CFInstall?.check()

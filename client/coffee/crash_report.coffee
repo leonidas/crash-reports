@@ -102,6 +102,18 @@ render_crashreport = (crashreport) ->
     $('#app_similar_crashes_num').text "-"
     $('#all_similar_crashes_num').text "-"
 
+    # Related Bugs
+    $('#related_bugs .tab1').empty()
+    $('#related_bugs .tab1').text '-'
+
+    # Related Test Cases
+    $('#related_test_cases ul').empty()
+    $('#related_test_cases ul').text '-'
+
+    # Related Crashes
+    $('#related_crashes .tab1').empty()
+    $('#related_crashes .tab1').text '-'
+
     #Download links
     host_url  = "http://#{window.location.host}/"
     core_url  = crashreport.files.core.path.replace(/^.*\/public\//,host_url)

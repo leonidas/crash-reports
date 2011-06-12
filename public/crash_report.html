@@ -152,24 +152,49 @@
                     <section id="crash_details">
                         <h1 class="page_divider">Crash Details <a href="" id="download_core_btn" class="ui_btn download">Download core</a> <a href="" id="download_rcore_btn" class="ui_btn download">Download rich core</a></h1>
 
-                        <article id="stack_trace" class="details_view">
-                            <h1>Stack Trace <a href="" id="download_stack_trace" class="download_link">Download</a></h1>
+                        <article id="stack_traces" class="details_view">
+                            <h2>Stack Traces <a href="" id="download_stack_trace" class="download_link">Download</a></h2>
 
-                            <table id="stack_trace_content" class="details">
+                            <h3>Registers</h3>
+
+                            <table id="register_table" class ="details">
                                 <tr>
-                                    <td class="row">1</td>
-                                    <td>
-                                        <pre>0x12345678 <a href="" class="secondary">g_main_context_example</a>  (this=0x10d3ad) <a href="" class="show_source"></a></pre>
-                                    </td>
+                                    <th>Register</th>
+                                    <th>Hex</th>
+                                    <th>Dec</th>
                                 </tr>
                                 <tr>
-                                <tr class="highlite">
-                                    <td class="row">2</td>
-                                    <td>
-                                        <pre>0x87654321 <a href="" class="secondary">QEventLoop::example</a>  (this=0x10b3ef) <a href="" class="show_source"></a></pre>
-                                    </td>
+                                    <td class="register_name">Register</td>
+                                    <td class="register_hex">0xab12345</td>
+                                    <td class="register_dec">123456678</td>
                                 </tr>
                             </table>
+
+                            <div class="stack_trace">
+                            <h3 class="stack_name">Stack</h3>
+                            <div class="stack_pid">PID: <span class="stack_pid_content">Pid</span></div>
+                            <div class="crash_reason">Crash Reason: <span class="crash_reason_content">Fill reason here</span></div>
+
+                            <table class="stack_trace_table details">
+                                <tr>
+                                    <th>Frame</th>
+                                    <th>Address</th>
+                                    <th>Function</th>
+                                    <th>Context</th>
+                                    <th>Location</th>
+                                </tr>
+                                <tr class="stack_trace_row">
+                                    <td class="stack_trace_frame">1</td>
+                                    <td class="stack_trace_address">0x3b5f5bb4</td>
+                                    <td class="stack_trace_function">g_main_context_example</td>
+                                    <td class="stack_trace_context">(this=0x10df50)</td>
+                                    <td class="stack_trace_location">loc</td>
+                                </tr>
+                                <tr class="stack_trace_info_row">
+                                    <td class="stack_trace_info" colspan="5">Info here</td>
+                                </tr>
+                            </table>
+                            </div>
                         </article>
 
                         <article id="process_state" class="details_view">
@@ -182,6 +207,18 @@
                                 </tr>
                                 <tr>
                                     <td>
+                                        <a href=""><strong>cmdline</strong></a><br/>
+                                        <a class="download_link">Download</a>
+                                    </td>
+                                    <td id="cmdline_content">
+                                        <pre>
+not available
+                                        </pre>
+                                    </td>
+                                </tr>
+
+                                <tr class="even">
+                                    <td>
                                         <a href=""><strong>ls_proc</strong></a><br/>
                                         <a class="download_link">Download</a>
                                     </td>
@@ -192,7 +229,7 @@ not available
                                     </td>
                                 </tr>
 
-                                <tr class="even">
+                                <tr>
                                     <td>
                                         <a href=""><strong>fd</strong></a><br/>
                                         <a class="download_link">Download</a>
@@ -220,7 +257,7 @@ not available
                                         <a href=""><strong>df</strong></a><br/>
                                         <a class="download_link">Download</a>
                                     </td>
-                                    <td>
+                                    <td id="df_content">
                                         <pre>
 not available
                                         </pre>
@@ -232,7 +269,7 @@ not available
                                         <a href=""><strong>ifconfig</strong></a><br/>
                                         <a class="download_link">Download</a>
                                     </td>
-                                    <td>
+                                    <td id="ifconfig_content">
                                         <pre>
 not available
                                         </pre>
@@ -244,7 +281,7 @@ not available
                                         <a href=""><strong>packagelist</strong></a><br/>
                                         <a class="download_link">Download</a>
                                     </td>
-                                    <td>
+                                    <td id="packagelist_content">
                                         <pre>
 not available
                                         </pre>

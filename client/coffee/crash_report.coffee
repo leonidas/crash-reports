@@ -69,6 +69,9 @@ parse_ls_list = (ls_list) ->
 
 render_process_state = (crashreport) ->
 
+    if crashreport["rich-core"]["cmdline"]
+        cmdline = crashreport["rich-core"]["cmdline"]
+        $('#cmdline_content pre').html cmdline
     if crashreport["rich-core"].ls_proc?
         ls_proc = parse_ls_list crashreport["rich-core"].ls_proc
         $('#ls_proc_content pre').html ls_proc
@@ -77,9 +80,95 @@ render_process_state = (crashreport) ->
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
 
-render_stacktrace = (crashreport) ->
-    #TODO
-    $('#stack_trace_content').empty()
+parse_ifconfig_list = (ifconfig_list) ->
+    network_re = /^([^ ]+\s+).*$/
+    next_is_network = true
+    indent = ""
+    ifconfig_list = _.map ifconfig_list, (line) ->
+        if line.length == 0
+            next_is_network = true
+        else
+            if next_is_network
+                next_is_network = false
+                match = network_re.exec(line)
+                if match
+                    indent = match[1].replace /./g, ' '
+            else
+                return indent + line
+        return line
+    return ifconfig_list.join('\n')
+
+render_system_state = (crashreport) ->
+
+    if crashreport["rich-core"].df?
+        df = crashreport["rich-core"].df.join('\n')
+        $('#df_content pre').html df
+
+    if crashreport["rich-core"].ifconfig?
+        ifconfig = parse_ifconfig_list crashreport["rich-core"].ifconfig
+        $('#ifconfig_content pre').html ifconfig
+
+    if crashreport["rich-core"].packagelist?
+        packagelist = crashreport["rich-core"].packagelist.join('\n')
+        $('#packagelist_content pre').html packagelist
+
+render_registers = (crashreport) ->
+    table = $('#register_table')
+    row_template = table.find('tr:last')
+    row_template.detach()
+    i = 0
+    for name, values of crashreport["stack-trace"]["registers"]
+        hex = values["hex"]
+        dec = values["dec"]
+        row = row_template.clone()
+        table.append row
+        row.find('.register_name').text name
+        row.find('.register_hex').text hex
+        row.find('.register_dec').text dec
+        row.addClass if ++i % 2 == 0 then "even" else "odd"
+
+render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
+
+    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
+    #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
+    #           frame    address                   func     args             context         isLib       location
+
+    stack = $('.stack_trace:first').clone()
+    $('#stack_traces').append(stack)
+
+    stack.find('.stack_name').text stack_name
+    if pid
+        stack.find('.stack_pid_content').text pid
+    else
+        stack.find('.stack_pid').detach()
+    if crash_reason
+        stack.find('.crash_reason_content').text crash_reason
+    else
+        stack.find('.crash_reason').detach()
+
+    table = stack.find('.stack_trace_table')
+    header = table.find('tr:first')
+    row_template = table.find('.stack_trace_row')
+    info_row_template = table.find('.stack_trace_info_row')
+    table.empty()
+    table.append header
+    i = 0
+    for line in stack_data
+        match = regexp.exec(line)
+        if not match
+            row = info_row_template.clone()
+            row.find('.stack_trace_info').text line
+        else
+            [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
+ 
+            row = row_template.clone()
+            row.find('.stack_trace_frame').text("#" + frameNr)
+            row.find('.stack_trace_address').text if address then address else "<unknown>"
+            row.find('.stack_trace_function').text func + " " + if args then args else ""
+            row.find('.stack_trace_context').text context
+            row.find('.stack_trace_location').text if location then location else ""
+            row.addClass if ++i % 2 == 0 then "even" else "odd"
+        table.append(row)
 
 render_crashreport = (crashreport) ->
     #Overview
@@ -125,10 +214,17 @@ render_crashreport = (crashreport) ->
     $('#download_stack_trace').attr "href", stack_url
 
     #Stack
-    render_stacktrace crashreport
-
+    render_registers crashreport
+    render_stacktrace "Crash Stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
+    for name, thread of crashreport["stack-trace"]["threads"]
+        render_stacktrace name, thread["pid"], null, thread["stack"]
+    $('.stack_trace:first').detach()
+        
     #Process state
     render_process_state crashreport
+
+    #System state
+    render_system_state crashreport
 
 $ () ->
     CFInstall?.check()

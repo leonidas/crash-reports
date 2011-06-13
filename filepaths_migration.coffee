@@ -1,10 +1,10 @@
 require.paths.unshift './node_modules'
 require.paths.push 'server'
 
-monmon = require('monmon').monmon
+monmon = require('monmon')
 _      = require('underscore')
-
-db  = monmon.use('crash-reports')
+async  = require('async')
+db     = monmon.monmon.use('crash-reports')
 crashreports_db = db.collection('crashreports')
 
 read_crashreports = (cb) ->
@@ -14,30 +14,31 @@ read_crashreports = (cb) ->
         cb null, arr
 
 write_crashreports = (arr, cb) ->
-    console.log "#{arr.length} crashreports to write"
-    #crashreports_db.find({'id':crashreport.id}).upsert().update(crashreport).run
-        # if err?
-        #     cb err
-        # else
-        #     cb null
-    cb null, null
+    async.forEachSeries arr,
+        (crashreport, cb_next) ->
+            console.log "store crashreport id:#{crashreport.id} to db" #debug
+            crashreports_db.find({'id':crashreport.id}).upsert().update(crashreport).run (err) ->
+                cb_next err if err?
+                cb_next null
+        (err) ->
+            cb err if err?
+            cb null
 
 modify_crashreports = (arr, cb) ->
     arr_modified = _(arr).map (crashreport) ->
         _(crashreport.files).each (properties,fileid) ->
-            console.log "before:#{properties.path}"
+            #console.log "before:#{properties.path}"
             properties.path = properties.path.replace /^.*\/public\//,''
             crashreport.files["fileid"] = properties
-            console.log "after:#{properties.path}"
+            #console.log "after:#{properties.path}"
         crashreport
     cb null, arr_modified
 
 read_crashreports (err,arr) ->
     throw err if err?
-#    console.log arr[0] #debug
     modify_crashreports arr, (err,arr) ->
         throw err if err?
-        console.log arr[3] #debug
-        console.log "done!"
-
-
+        write_crashreports arr, (err) ->
+            throw err if err?
+            monmon.closeAll()
+            console.log "done!"

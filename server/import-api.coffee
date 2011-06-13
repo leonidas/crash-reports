@@ -8,16 +8,17 @@ rcoreparser = require('richcore')
 stackparser = require('stack-trace')
 query_api   = require('query-api')
 
-CRASHREPORTS_FOLDER = "public/crashreport_files"
+# module globals
+
+CRASHREPORTS_FOLDER = "crashreport_files"
+
+DB_CRASHREPORTS  = "" #crashreport collection in db (set by init function)
+PUBLIC           = "" #absolute path for public folder (set by init function)
 
 # import api definition
 MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
-
-# module globals
-DB_CRASHREPORTS  = "" #crashreport collection in db, set by init function
-
 
 update_crashreport = (crashreport_new, cb) ->
     # get old crashreport from db
@@ -35,12 +36,12 @@ update_crashreport = (crashreport_new, cb) ->
         #return cb err.join() if not _.isEmpty(err)
 
         #parse stack-trace
-        stackparser.parse_stack_trace_file crashreport.files["stack-trace"].path, (err, stackdata) ->
+        stackparser.parse_stack_trace_file "#{PUBLIC}/#{crashreport.files["stack-trace"].path}", (err, stackdata) ->
             return cb err if err?
             crashreport["stack-trace"] = stackdata
 
             #parse rcore
-            rcoreparser.parse_rich_core crashreport.files["rich-core"], (err, rcoredata) ->
+            rcoreparser.parse_rich_core "#{PUBLIC}/#{crashreport.files["rich-core"].path}", (err, rcoredata) ->
                 return cb err if err?
                 crashreport["rich-core"] = rcoredata
 
@@ -130,7 +131,7 @@ move_files = (files, dest_dir, move_files_cb) ->
 
                 #create destination filename and path
                 dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
-                dest_path  = dest_dir + "/" + dest_fname
+                dest_path  = "#{PUBLIC}/#{dest_dir}/#{dest_fname}" #absolute path (assumes files are stored under public folder)
                 #console.log "moving file: " + property.path + " to: " + dest_path #debug
 
                 # copy files
@@ -143,7 +144,7 @@ move_files = (files, dest_dir, move_files_cb) ->
                     property_tmp = _.clone property
                     stored_files[fileid] =
                         name: dest_fname
-                        path: dest_path
+                        path: dest_dir
                         type: property_tmp.type
                         origname: property_tmp.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
                     cb null
@@ -172,7 +173,10 @@ remove_files = (files) ->
                 console.log err
 
 init_import_api = (settings, app, db) ->
+
     DB_CRASHREPORTS = db.collection('crashreports')
+    PUBLIC          = "#{settings.app.root}/public"
+
     app.post "/api/import", (req, res) ->
 
         # verify content type (multipart)
@@ -209,8 +213,8 @@ init_import_api = (settings, app, db) ->
                     fields["rich-core"] = rcoredata
 
                     #make crashreport file storage folder
-                    storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
-                    fs.mkdir storage_dir, 0755, (err) ->
+                    storage_dir = "#{CRASHREPORTS_FOLDER}/#{fields.id}" #dirname from crash id
+                    fs.mkdir "#{PUBLIC}/#{storage_dir}", 0755, (err) ->
                         if err? && err.code != "EEXIST"
                             res.send {"ok":"0","errors":err}
                             return remove_files files #cleanup after error

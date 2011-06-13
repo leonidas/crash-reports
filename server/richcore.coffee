@@ -5,44 +5,43 @@ fs   = require('fs')
 exec = require('child_process').exec
 
 
-extract_rich_core = (rcorefile, cb) ->
-    fn = temp.path(suffix: '.core')
-    cmd = "lzop -d #{rcorefile.path} -o#{fn}"
+extract_rich_core = (filepath, cb) ->
+    fn = temp.path(suffix: '.rcore')
+    cmd = "lzop -d #{filepath} -o#{fn}"
     exec cmd, (err, stdout, stderr) ->
-        cb?(err, {path: fn})
+        cb?(err, fn)
 
-parse_rich_core = (rcorefile, cb) ->
-    console.log "parsing rich core: #{rcorefile.path}"
-    path = rcorefile.path
+parse_rich_core = (filepath, cb) ->
+    console.log "parsing rich core: #{filepath}"
 
-    if /\.lzo$/.test(path)
-        extract_rich_core rcorefile, (err, corefile) ->
+    if /\.lzo$/.test(filepath)
+        extract_rich_core filepath, (err, tempfilepath) ->
             return cb? err if err?
-            parse_rich_core corefile, (err, core) ->
-               fs.unlink(corefile.path)
-               cb?(err, core)
+            parse_rich_core tempfilepath, (err, rcore) ->
+               fs.unlink(tempfilepath)
+               cb?(err, rcore)
         return
 
-    lines = new lazy(fs.createReadStream path)
+    lines = new lazy(fs.createReadStream filepath)
 
     groups = group_lines(lines)
 
-    core = null
+    rcore = null
 
     groups.forEach (g) ->
-        if not core?
-            core =
+        if not rcore?
+            rcore =
                 cmdline: g.lines[0]
         else
             switch g.name
-                when 'date'     then core.date = parse_core_date g.lines[0]
-                when 'ls_proc'  then core.ls_proc = g.lines
-                when 'fd'       then core.fd = g.lines
-                when 'df'       then core.df = g.lines
-                when 'ifconfig' then core.ifconfig = g.lines
+                when 'date'     then rcore.date = parse_core_date g.lines[0]
+                when 'ls_proc'  then rcore.ls_proc = g.lines
+                when 'fd'       then rcore.fd = g.lines
+                when 'df'       then rcore.df = g.lines
+                when 'ifconfig' then rcore.ifconfig = g.lines
 
     groups.on 'end', () ->
-        cb? null, core
+        cb? null, rcore
 
 
 date_regexp = /(\w+)\s+(\w+)\s+(\d+)\s+([0-9:]+)\s+([A-Z]+)\s+(\d+)/

@@ -130,13 +130,13 @@ move_files = (files, dest_dir, move_files_cb) ->
             if property.path?
 
                 #create destination filename and path
-                dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
-                dest_path  = "#{PUBLIC}/#{dest_dir}/#{dest_fname}" #absolute path (assumes files are stored under public folder)
+                dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #sometimes name has also path information
+                dest_path  = "#{dest_dir}/#{dest_fname}"
                 #console.log "moving file: " + property.path + " to: " + dest_path #debug
 
                 # copy files
                 src_stream = fs.createReadStream property.path
-                dst_stream = fs.createWriteStream dest_path
+                dst_stream = fs.createWriteStream "#{PUBLIC}/#{dest_path}" #absolute path (assumes files are stored under public folder)
                 util.pump src_stream,dst_stream, (err) ->
                     return cb err if err?
 
@@ -144,9 +144,9 @@ move_files = (files, dest_dir, move_files_cb) ->
                     property_tmp = _.clone property
                     stored_files[fileid] =
                         name: dest_fname
-                        path: dest_dir
+                        path: dest_path
                         type: property_tmp.type
-                        origname: property_tmp.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
+                        origname: property_tmp.name.replace(/.*\//,"") #sometimes name has also path information
                     cb null
 
     # run file move operations
@@ -206,7 +206,7 @@ init_import_api = (settings, app, db) ->
                 fields["stack-trace"] = stackdata
 
                 #parse rich-core
-                rcoreparser.parse_rich_core files["rich-core"], (err, rcoredata) ->
+                rcoreparser.parse_rich_core files["rich-core"].path, (err, rcoredata) ->
                     if err?
                         res.send {"ok":"0","errors":err}
                         return remove_files files #cleanup

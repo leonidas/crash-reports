@@ -316,8 +316,17 @@ class DBConnection
                 callback? err, db
                 t.opening = false
 
-    close: ->
-        @db?.close(->)
+    close: (callback) ->
+        @db?.close callback
 
 
 exports.monmon = new MongoMonad()
+exports.closeAll = (callback) ->
+    closes = []
+    for k,c of conn_pool
+        do (c) ->
+            closes.push (cb) ->
+                c.close cb
+
+    async.parallel closes, callback
+

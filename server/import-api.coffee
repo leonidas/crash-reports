@@ -84,11 +84,11 @@ validate_file = (property, fileid) ->
     err = []
     switch fileid
         when "core"
-            err.push "unknown format for core (expected .core)" if !property.name.match /\.core/
+            err.push "unknown format for core (expected .core)" unless property.name.match /\.core$/
         when "rich-core"
-            err.push "unknown format for core (expected .rcore)" if !property.name.match /\.rcore/
+            err.push "unknown format for rich-core (expected .rcore)" unless property.name.match /(\.rcore$)|(\.lzo$)/
         when "stack-trace"
-            err.push "unknown format for core (expected .txt)" if !property.name.match /\.txt/
+            err.push "unknown format for stack-trace (expected .txt)" unless property.name.match /\.txt$/
     return err
 
 

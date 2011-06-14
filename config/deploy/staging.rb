@@ -19,8 +19,9 @@ namespace :db do
   #TODO: temporary while production data not available
   desc "Dump and fetch staging database"
   task :dump, :roles => :db, :only => {:primary => true} do
-    db_name = "#{app_name}-#{node_env}" #assuming db naming follows app name and node env!
-    run "cd #{current_path} && mongodump --db #{db_name} && tar -czf #{db_name}.tar.gz ./dump/#{db_name}"
+    db_name    = "#{app_name}-#{node_env}" #assuming db naming follows app name and node env!
+    crashfiles = "./public/crashreport_files/*"
+    run "cd #{current_path} && mongodump --db #{db_name} && tar -czf #{db_name}.tar.gz ./dump/#{db_name} #{crashfiles}"
     get "#{current_path}/#{db_name}.tar.gz", "./#{db_name}.tar.gz"
     run "rm #{current_path}/#{db_name}.tar.gz"
   end

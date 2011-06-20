@@ -152,23 +152,29 @@
                     <section id="crash_details">
                         <h1 class="page_divider">Crash Details <a href="" id="download_core_btn" class="ui_btn download">Download core</a> <a href="" id="download_rcore_btn" class="ui_btn download">Download rich core</a></h1>
 
+                        <article class="details_view">
+                        <h1>Crash Reason</h1>
+                        <div id="crash_reason">Fill reason here</div>
+                        </article>
+
                         <article id="stack_trace" class="details_view">
                             <h1>Stack Trace <a href="" id="download_stack_trace" class="download_link">Download</a></h1>
 
                             <table id="stack_trace_content" class="details">
                                 <tr>
-                                    <td class="row">1</td>
-                                    <td>
-                                        <pre><span id="address">0x3b5f5bb4</span>  <a href="" class="secondary" id="func">g_main_context_example</a>  <span id="context">(this=0x10df50)</span> <span id="location">loc</span> <a href="" class="show_source"></a></pre>
-
-                                    </td>
+                                    <th>Frame</th>
+                                    <th>Address</th>
+                                    <th>Function</th>
+                                    <th>Context</th>
+                                    <th colspan="2">Location</th>
                                 </tr>
                                 <tr>
-                                <tr class="highlite">
-                                    <td class="row">2</td>
-                                    <td>
-                                        <pre>0x87654321 <a href="" class="secondary">QEventLoop::example</a>  (this=0x10b3ef) <a href="" class="show_source"></a></pre>
-                                    </td>
+                                    <td id="frame">1</td>
+                                    <td id="address">0x3b5f5bb4</td>
+                                    <td id="func"><a href="" class="secondary">g_main_context_example</a></td>
+                                    <td id="context">(this=0x10df50)</td>
+                                    <td id="location">loc</td>
+                                    <td><a href="" class="show_source"></a></td>
                                 </tr>
                             </table>
                         </article>

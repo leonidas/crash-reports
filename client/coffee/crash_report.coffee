@@ -78,7 +78,6 @@ render_process_state = (crashreport) ->
         $('#fd_content pre').html fd
 
 render_stacktrace = (crashreport) ->
-    #TODO
     stack = crashreport["stack-trace"]["crashstack"]
 
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+([^ \(]+(\([^\)]*\))?)\s+(\([^\)]*\))\s+(at|from)\s+([^ ]+).*$/
@@ -86,22 +85,28 @@ render_stacktrace = (crashreport) ->
     #           lineN    address                  func                     context        isLib       location
 
     table = $('#stack_trace_content')
-    template = $('#stack_trace_content tr:first')
+    header = $('#stack_trace_content tr:first')
+    template = $('#stack_trace_content tr:last')
     table.empty()
+    table.append header
     for i in [0..stack.length-2]
         contentObject = template.clone()
         line = stack[i]
         match = regexp.exec(line)
-        [_, lineNr, _, address,func, _, context, isLib, location] = match
-        address ?= "unknown"
+        [_, frameNr, _, address,func, _, context, isLib, location] = match
+        address ?= "<unknown>"
         fromLib = if isLib == "from" then "from library" else "at file:line"
 
-        contentObject.find('.row').text lineNr
+        contentObject.find('#frame').text("#" + frameNr)
         contentObject.find('#address').text address
         contentObject.find('#func').text func
         contentObject.find('#context').text context
-        contentObject.find('#location').text fromLib + " " + location
+        contentObject.find('#location').text location # fromLib + " " + location
         table.append(contentObject)
+
+write_crash_reason = (crashreport) ->
+    reason = crashreport["stack-trace"]["crash_reason"]
+    $('#crash_reason').text reason
 
 render_crashreport = (crashreport) ->
     #Overview
@@ -148,6 +153,7 @@ render_crashreport = (crashreport) ->
 
     #Stack
     render_stacktrace crashreport
+    write_crash_reason crashreport
 
     #Process state
     render_process_state crashreport

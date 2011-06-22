@@ -77,31 +77,41 @@ render_process_state = (crashreport) ->
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
 
-render_stacktrace = (crashreport) ->
-    stack = crashreport["stack-trace"]["crashstack"]
+render_stacktrace = (stack_name, pid, stack_data) ->
 
-    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+([^ \(]+(\([^\)]*\))?)\s+(\([^\)]*\))\s+(at|from)\s+([^ ]+).*$/
-    #           ^^^^^    ^^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^   ^^^^^^^^^   ^^^^^^^
-    #           lineN    address                  func                     context        isLib       location
+    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
+    #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
+    #           frame    address                   func     args             context         isLib       location
 
-    table = $('#stack_trace_content')
-    header = $('#stack_trace_content tr:first')
-    template = $('#stack_trace_content tr:last')
+    stack_template = $('.stack_trace:first')
+    stack = stack_template.clone()
+    $('#stack_traces').append(stack)
+    stack.find('.stack_name').text stack_name
+    stack.find('.stack_pid').text if pid then "PID: " + pid else ""
+
+    table = stack.find('.stack_trace_table')
+    header = table.find('tr:first')
+    row_template = table.find('tr:last')
     table.empty()
     table.append header
-    for i in [0..stack.length-2]
-        contentObject = template.clone()
-        line = stack[i]
+    for i in [0..stack_data.length-1]
+        contentObject = row_template.clone()
+        line = stack_data[i]
+        console.log i
         match = regexp.exec(line)
-        [_, frameNr, _, address,func, _, context, isLib, location] = match
+        if not match
+            continue
+        [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
+        console.log i
+        args ?= ""
         address ?= "<unknown>"
-        fromLib = if isLib == "from" then "from library" else "at file:line"
-
-        contentObject.find('#frame').text("#" + frameNr)
-        contentObject.find('#address').text address
-        contentObject.find('#func').text func
-        contentObject.find('#context').text context
-        contentObject.find('#location').text location # fromLib + " " + location
+        location ?= ""
+ 
+        contentObject.find('.stack_trace_frame').text("#" + frameNr)
+        contentObject.find('.stack_trace_address').text address
+        contentObject.find('.stack_trace_function').text func + " " + args
+        contentObject.find('.stack_trace_context').text context
+        contentObject.find('.stack_trace_location').text location
         table.append(contentObject)
 
 write_crash_reason = (crashreport) ->
@@ -152,7 +162,14 @@ render_crashreport = (crashreport) ->
     $('#download_stack_trace').attr "href", stack_url
 
     #Stack
-    render_stacktrace crashreport
+    render_stacktrace "crash stack", null, crashreport["stack-trace"]["crashstack"]
+    for name, thread of crashreport["stack-trace"]["threads"]
+        render_stacktrace name, thread["pid"], thread["stack"]
+    $('.stack_trace:first').detach()
+        
+
+
+    #render_stacktrace crashreport["stack-trace"]["threads"]["Thread 2"]["stack"]
     write_crash_reason crashreport
 
     #Process state

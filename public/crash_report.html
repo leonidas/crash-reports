@@ -153,30 +153,34 @@
                         <h1 class="page_divider">Crash Details <a href="" id="download_core_btn" class="ui_btn download">Download core</a> <a href="" id="download_rcore_btn" class="ui_btn download">Download rich core</a></h1>
 
                         <article class="details_view">
-                        <h1>Crash Reason</h1>
+                        <h2>Crash Reason</h2>
                         <div id="crash_reason">Fill reason here</div>
                         </article>
 
-                        <article id="stack_trace" class="details_view">
-                            <h1>Stack Trace <a href="" id="download_stack_trace" class="download_link">Download</a></h1>
+                        <article id="stack_traces" class="details_view">
+                            <h2>Stack Traces <a href="" id="download_stack_trace" class="download_link">Download</a></h2>
 
-                            <table id="stack_trace_content" class="details">
+                            <div class="stack_trace">
+                            <h3 class="stack_name">Stack</h3>
+                            <div class="stack_pid">Pid</div>
+
+                            <table class="stack_trace_table">
                                 <tr>
                                     <th>Frame</th>
                                     <th>Address</th>
                                     <th>Function</th>
                                     <th>Context</th>
-                                    <th colspan="2">Location</th>
+                                    <th>Location</th>
                                 </tr>
                                 <tr>
-                                    <td id="frame">1</td>
-                                    <td id="address">0x3b5f5bb4</td>
-                                    <td id="func"><a href="" class="secondary">g_main_context_example</a></td>
-                                    <td id="context">(this=0x10df50)</td>
-                                    <td id="location">loc</td>
-                                    <td><a href="" class="show_source"></a></td>
+                                    <td class="stack_trace_frame">1</td>
+                                    <td class="stack_trace_address">0x3b5f5bb4</td>
+                                    <td class="stack_trace_function">g_main_context_example</td>
+                                    <td class="stack_trace_context">(this=0x10df50)</td>
+                                    <td class="stack_trace_location">loc</td>
                                 </tr>
                             </table>
+                            </div>
                         </article>
 
                         <article id="process_state" class="details_view">

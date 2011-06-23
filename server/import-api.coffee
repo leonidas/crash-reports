@@ -8,16 +8,17 @@ rcoreparser = require('richcore')
 stackparser = require('stack-trace')
 query_api   = require('query-api')
 
-CRASHREPORTS_FOLDER = "public/crashreport_files"
+# module globals
+
+CRASHREPORTS_FOLDER = "crashreport_files"
+
+DB_CRASHREPORTS  = "" #crashreport collection in db (set by init function)
+PUBLIC           = "" #absolute path for public folder (set by init function)
 
 # import api definition
 MANDATORY_FIELDS = ["auth-token","release","product","build","id"]
 OPTIONAL_FIELDS  = ["profile","imei","mac"]
 MANDATORY_FILES  = ["core","rich-core","stack-trace"]
-
-# module globals
-DB_CRASHREPORTS  = "" #crashreport collection in db, set by init function
-
 
 update_crashreport = (crashreport_new, cb) ->
     # get old crashreport from db
@@ -35,12 +36,12 @@ update_crashreport = (crashreport_new, cb) ->
         #return cb err.join() if not _.isEmpty(err)
 
         #parse stack-trace
-        stackparser.parse_stack_trace_file crashreport.files["stack-trace"].path, (err, stackdata) ->
+        stackparser.parse_stack_trace_file "#{PUBLIC}/#{crashreport.files["stack-trace"].path}", (err, stackdata) ->
             return cb err if err?
             crashreport["stack-trace"] = stackdata
 
             #parse rcore
-            rcoreparser.parse_rich_core crashreport.files["rich-core"], (err, rcoredata) ->
+            rcoreparser.parse_rich_core "#{PUBLIC}/#{crashreport.files["rich-core"].path}", (err, rcoredata) ->
                 return cb err if err?
                 crashreport["rich-core"] = rcoredata
 
@@ -52,6 +53,8 @@ update_crashreport = (crashreport_new, cb) ->
 
 
 save_crashreport = (crashreport, cb) ->
+    console.log "savecrashreport"
+    console.log crashreport.files.attachments
     q = DB_CRASHREPORTS.find({'id':crashreport.id}).upsert().update(crashreport)
     q.run (err) ->
         if err?
@@ -83,11 +86,11 @@ validate_file = (property, fileid) ->
     err = []
     switch fileid
         when "core"
-            err.push "unknown format for core (expected .core)" if !property.name.match /\.core/
+            err.push "unknown format for core (expected .core)" unless property.name.match /\.core$/
         when "rich-core"
-            err.push "unknown format for core (expected .rcore)" if !property.name.match /\.rcore/
+            err.push "unknown format for rich-core (expected .rcore)" unless property.name.match /(\.rcore$)|(\.lzo$)/
         when "stack-trace"
-            err.push "unknown format for core (expected .txt)" if !property.name.match /\.txt/
+            err.push "unknown format for stack-trace (expected .txt)" unless property.name.match /\.txt$/
     return err
 
 
@@ -129,13 +132,13 @@ move_files = (files, dest_dir, move_files_cb) ->
             if property.path?
 
                 #create destination filename and path
-                dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
-                dest_path  = dest_dir + "/" + dest_fname
+                dest_fname = fileid + "_" + property.name.replace(/.*\//,"") #sometimes name has also path information
+                dest_path  = "#{dest_dir}/#{dest_fname}"
                 #console.log "moving file: " + property.path + " to: " + dest_path #debug
 
                 # copy files
                 src_stream = fs.createReadStream property.path
-                dst_stream = fs.createWriteStream dest_path
+                dst_stream = fs.createWriteStream "#{PUBLIC}/#{dest_path}" #absolute path (assumes files are stored under public folder)
                 util.pump src_stream,dst_stream, (err) ->
                     return cb err if err?
 
@@ -145,7 +148,7 @@ move_files = (files, dest_dir, move_files_cb) ->
                         name: dest_fname
                         path: dest_path
                         type: property_tmp.type
-                        origname: property_tmp.name.replace(/.*\//,"") #TODO: check how sometimes name has also path information
+                        origname: property_tmp.name.replace(/.*\//,"") #sometimes name has also path information
                     cb null
 
     # run file move operations
@@ -171,8 +174,20 @@ remove_files = (files) ->
                 console.log "remove_files error:"
                 console.log err
 
+parse_attachments = (files) ->
+    attachments_arr = []
+    _(files).each (property, fileid) ->
+        if fileid.match /attachment\.\d+/i
+            attachments_arr.push(property)
+            delete files[fileid]
+    files["attachments"] = attachments_arr if attachments_arr.length > 0
+    return files
+
 init_import_api = (settings, app, db) ->
+
     DB_CRASHREPORTS = db.collection('crashreports')
+    PUBLIC          = "#{settings.app.root}/public"
+
     app.post "/api/import", (req, res) ->
 
         # verify content type (multipart)
@@ -186,6 +201,8 @@ init_import_api = (settings, app, db) ->
         req.form.complete (err, fields, files) ->
             return res.send {"ok":"0","errors":err} if err? #form parsing/upload error
 
+            #TODO: refactor validation & parsing stages into functions and run with async
+
             #validate data (TODO: wrap validation into one function)
             err = []
             err = err.concat validate_crashreport_fields(fields)
@@ -193,6 +210,7 @@ init_import_api = (settings, app, db) ->
             if not _.isEmpty(err)
                 res.send {"ok":"0","errors":err.join()}
                 return remove_files files #cleanup after error
+
 
             #parse stack-trace file
             stackparser.parse_stack_trace_file files["stack-trace"].path, (err, stackdata) ->
@@ -202,15 +220,15 @@ init_import_api = (settings, app, db) ->
                 fields["stack-trace"] = stackdata
 
                 #parse rich-core
-                rcoreparser.parse_rich_core files["rich-core"], (err, rcoredata) ->
+                rcoreparser.parse_rich_core files["rich-core"].path, (err, rcoredata) ->
                     if err?
                         res.send {"ok":"0","errors":err}
                         return remove_files files #cleanup
                     fields["rich-core"] = rcoredata
 
                     #make crashreport file storage folder
-                    storage_dir = "#{settings.app.root}/#{CRASHREPORTS_FOLDER}/#{fields.id}"
-                    fs.mkdir storage_dir, 0755, (err) ->
+                    storage_dir = "#{CRASHREPORTS_FOLDER}/#{fields.id}" #dirname from crash id
+                    fs.mkdir "#{PUBLIC}/#{storage_dir}", 0755, (err) ->
                         if err? && err.code != "EEXIST"
                             res.send {"ok":"0","errors":err}
                             return remove_files files #cleanup after error
@@ -224,7 +242,10 @@ init_import_api = (settings, app, db) ->
                             # create crashreport collection
                             crashreport = {}
                             _(fields).each (v,k) -> crashreport[k] = v
-                            crashreport.files = stored_files
+
+                            # parse attachments
+                            crashreport.files = parse_attachments(stored_files)
+
                             # TODO: put attachment files into an array and replace /\./,'_'
 
                             #console.log "Crashreport: " + util.inspect(crashreport) #debug

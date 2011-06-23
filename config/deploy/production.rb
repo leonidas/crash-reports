@@ -19,9 +19,10 @@ end
 namespace :db do
   desc "Dump and fetch production database"
   task :dump, :roles => :db, :only => {:primary => true} do
-    # TODO: mongodump -> tar -> download -> extract
-    #  run "cd #{current_path} && mongodump"
-    #  get "#{current_path}/mongodbdump.tar", "./mongodbdump.tar"
-    #  run "rm #{current_path}/mongodbdump.tar"
+    db_name    = "#{app_name}-#{node_env}" #assuming db naming follows app name and node env!
+    crashfiles = "./public/crashreport_files/*"
+    run "cd #{current_path} && mongodump --db #{db_name} && tar -czf #{db_name}.tar.gz ./dump/#{db_name} #{crashfiles}"
+    get "#{current_path}/#{db_name}.tar.gz", "./#{db_name}.tar.gz"
+    run "rm #{current_path}/#{db_name}.tar.gz"
   end
 end

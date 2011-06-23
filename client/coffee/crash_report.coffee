@@ -72,7 +72,6 @@ render_process_state = (crashreport) ->
     if crashreport["rich-core"]["cmdline"]
         cmdline = crashreport["rich-core"]["cmdline"]
         $('#cmdline_content pre').html cmdline
-
     if crashreport["rich-core"].ls_proc?
         ls_proc = parse_ls_list crashreport["rich-core"].ls_proc
         $('#ls_proc_content pre').html ls_proc
@@ -80,6 +79,38 @@ render_process_state = (crashreport) ->
     if crashreport["rich-core"].fd?
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
+
+parse_ifconfig_list = (ifconfig_list) ->
+    network_re = /^([^ ]+\s+).*$/
+    next_is_network = true
+    indent = ""
+    ifconfig_list = _.map ifconfig_list, (line) ->
+        if line.length == 0
+            next_is_network = true
+        else
+            if next_is_network
+                next_is_network = false
+                match = network_re.exec(line)
+                if match
+                    indent = match[1].replace /./g, ' '
+            else
+                return indent + line
+        return line
+    return ifconfig_list.join('\n')
+
+render_system_state = (crashreport) ->
+
+    if crashreport["rich-core"].df?
+        df = crashreport["rich-core"].df.join('\n')
+        $('#df_content pre').html df
+
+    if crashreport["rich-core"].ifconfig?
+        ifconfig = parse_ifconfig_list crashreport["rich-core"].ifconfig
+        $('#ifconfig_content pre').html ifconfig
+
+    if crashreport["rich-core"].packagelist?
+        packagelist = crashreport["rich-core"].packagelist.join('\n')
+        $('#packagelist_content pre').html packagelist
 
 render_registers = (crashreport) ->
     table = $('#register_table')
@@ -188,6 +219,9 @@ render_crashreport = (crashreport) ->
         
     #Process state
     render_process_state crashreport
+
+    #System state
+    render_system_state crashreport
 
 $ () ->
     CFInstall?.check()

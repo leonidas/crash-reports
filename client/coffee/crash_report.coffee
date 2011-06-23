@@ -77,6 +77,22 @@ render_process_state = (crashreport) ->
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
 
+render_registers = (crashreport) ->
+    table = $('#register_table')
+    row_template = table.find('tr:last')
+    row_template.detach()
+    i = 0
+    for name, values of crashreport["stack-trace"]["registers"]
+        hex = values["hex"]
+        dec = values["dec"]
+        console.log name + ":" + hex + "," + dec
+        row = row_template.clone()
+        table.append row
+        row.find('.register_name').text name
+        row.find('.register_hex').text hex
+        row.find('.register_dec').text dec
+        row.addClass if ++i % 2 == 0 then "even" else "odd"
+
 render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
@@ -101,6 +117,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
     row_template = table.find('tr:last')
     table.empty()
     table.append header
+    i = 0
     for line in stack_data
         row = row_template.clone()
         match = regexp.exec(line)
@@ -113,6 +130,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
         row.find('.stack_trace_function').text func + " " + if args then args else ""
         row.find('.stack_trace_context').text context
         row.find('.stack_trace_location').text if location then location else ""
+        row.addClass if ++i % 2 == 0 then "even" else "odd"
         table.append(row)
 
 render_crashreport = (crashreport) ->
@@ -159,7 +177,8 @@ render_crashreport = (crashreport) ->
     $('#download_stack_trace').attr "href", stack_url
 
     #Stack
-    render_stacktrace "crash stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
+    render_registers crashreport
+    render_stacktrace "Crash stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
     for name, thread of crashreport["stack-trace"]["threads"]
         render_stacktrace name, thread["pid"], null, thread["stack"]
     $('.stack_trace:first').detach()

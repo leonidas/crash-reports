@@ -155,12 +155,27 @@
                         <article id="stack_traces" class="details_view">
                             <h2>Stack Traces <a href="" id="download_stack_trace" class="download_link">Download</a></h2>
 
+                            <h3>Registers</h3>
+                            
+                            <table id="register_table" class ="details">
+                                <tr>
+                                    <th>Register</th>
+                                    <th>Hex</th>
+                                    <th>Dec</th>
+                                </tr>
+                                <tr>
+                                    <td class="register_name">Register</td>
+                                    <td class="register_hex">0xab12345</td>
+                                    <td class="register_dec">123456678</td>
+                                </tr>
+                            </table>
+
                             <div class="stack_trace">
                             <h3 class="stack_name">Stack</h3>
                             <div class="stack_pid">PID: <span class="stack_pid_content">Pid</span></div>
                             <div class="crash_reason">Crash Reason: <span class="crash_reason_content">Fill reason here</span></div>
 
-                            <table class="stack_trace_table" class="details">
+                            <table class="stack_trace_table details">
                                 <tr>
                                     <th>Frame</th>
                                     <th>Address</th>

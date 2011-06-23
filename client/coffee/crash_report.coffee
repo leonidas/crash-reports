@@ -148,23 +148,26 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
     table = stack.find('.stack_trace_table')
     header = table.find('tr:first')
-    row_template = table.find('tr:last')
+    row_template = table.find('.stack_trace_row')
+    info_row_template = table.find('.stack_trace_info_row')
     table.empty()
     table.append header
     i = 0
     for line in stack_data
-        row = row_template.clone()
         match = regexp.exec(line)
         if not match
-            continue
-        [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
+            row = info_row_template.clone()
+            row.find('.stack_trace_info').text line
+        else
+            [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
  
-        row.find('.stack_trace_frame').text("#" + frameNr)
-        row.find('.stack_trace_address').text if address then address else "<unknown>"
-        row.find('.stack_trace_function').text func + " " + if args then args else ""
-        row.find('.stack_trace_context').text context
-        row.find('.stack_trace_location').text if location then location else ""
-        row.addClass if ++i % 2 == 0 then "even" else "odd"
+            row = row_template.clone()
+            row.find('.stack_trace_frame').text("#" + frameNr)
+            row.find('.stack_trace_address').text if address then address else "<unknown>"
+            row.find('.stack_trace_function').text func + " " + if args then args else ""
+            row.find('.stack_trace_context').text context
+            row.find('.stack_trace_location').text if location then location else ""
+            row.addClass if ++i % 2 == 0 then "even" else "odd"
         table.append(row)
 
 render_crashreport = (crashreport) ->

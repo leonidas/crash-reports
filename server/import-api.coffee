@@ -53,6 +53,8 @@ update_crashreport = (crashreport_new, cb) ->
 
 
 save_crashreport = (crashreport, cb) ->
+    console.log "savecrashreport"
+    console.log crashreport.files.attachments
     q = DB_CRASHREPORTS.find({'id':crashreport.id}).upsert().update(crashreport)
     q.run (err) ->
         if err?
@@ -172,6 +174,15 @@ remove_files = (files) ->
                 console.log "remove_files error:"
                 console.log err
 
+parse_attachments = (files) ->
+    attachments_arr = []
+    _(files).each (property, fileid) ->
+        if fileid.match /attachment\.\d+/i
+            attachments_arr.push(property)
+            delete files[fileid]
+    files["attachments"] = attachments_arr if attachments_arr.length > 0
+    return files
+
 init_import_api = (settings, app, db) ->
 
     DB_CRASHREPORTS = db.collection('crashreports')
@@ -190,6 +201,8 @@ init_import_api = (settings, app, db) ->
         req.form.complete (err, fields, files) ->
             return res.send {"ok":"0","errors":err} if err? #form parsing/upload error
 
+            #TODO: refactor validation & parsing stages into functions and run with async
+
             #validate data (TODO: wrap validation into one function)
             err = []
             err = err.concat validate_crashreport_fields(fields)
@@ -197,6 +210,7 @@ init_import_api = (settings, app, db) ->
             if not _.isEmpty(err)
                 res.send {"ok":"0","errors":err.join()}
                 return remove_files files #cleanup after error
+
 
             #parse stack-trace file
             stackparser.parse_stack_trace_file files["stack-trace"].path, (err, stackdata) ->
@@ -228,7 +242,10 @@ init_import_api = (settings, app, db) ->
                             # create crashreport collection
                             crashreport = {}
                             _(fields).each (v,k) -> crashreport[k] = v
-                            crashreport.files = stored_files
+
+                            # parse attachments
+                            crashreport.files = parse_attachments(stored_files)
+
                             # TODO: put attachment files into an array and replace /\./,'_'
 
                             #console.log "Crashreport: " + util.inspect(crashreport) #debug

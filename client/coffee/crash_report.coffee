@@ -69,6 +69,10 @@ parse_ls_list = (ls_list) ->
 
 render_process_state = (crashreport) ->
 
+    if crashreport["rich-core"]["cmdline"]
+        cmdline = crashreport["rich-core"]["cmdline"]
+        $('#cmdline_content pre').html cmdline
+
     if crashreport["rich-core"].ls_proc?
         ls_proc = parse_ls_list crashreport["rich-core"].ls_proc
         $('#ls_proc_content pre').html ls_proc
@@ -85,7 +89,6 @@ render_registers = (crashreport) ->
     for name, values of crashreport["stack-trace"]["registers"]
         hex = values["hex"]
         dec = values["dec"]
-        console.log name + ":" + hex + "," + dec
         row = row_template.clone()
         table.append row
         row.find('.register_name').text name
@@ -178,7 +181,7 @@ render_crashreport = (crashreport) ->
 
     #Stack
     render_registers crashreport
-    render_stacktrace "Crash stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
+    render_stacktrace "Crash Stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
     for name, thread of crashreport["stack-trace"]["threads"]
         render_stacktrace name, thread["pid"], null, thread["stack"]
     $('.stack_trace:first').detach()

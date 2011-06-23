@@ -81,7 +81,6 @@ render_process_state = (crashreport) ->
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
 
-<<<<<<< HEAD
 render_registers = (crashreport) ->
     table = $('#register_table')
     row_template = table.find('tr:last')
@@ -97,8 +96,6 @@ render_registers = (crashreport) ->
         row.find('.register_dec').text dec
         row.addClass if ++i % 2 == 0 then "even" else "odd"
 
-=======
->>>>>>> 382e2e4e69696f767830a00c182a502d66dd4dec
 render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
@@ -136,10 +133,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
         row.find('.stack_trace_function').text func + " " + if args then args else ""
         row.find('.stack_trace_context').text context
         row.find('.stack_trace_location').text if location then location else ""
-<<<<<<< HEAD
         row.addClass if ++i % 2 == 0 then "even" else "odd"
-=======
->>>>>>> 382e2e4e69696f767830a00c182a502d66dd4dec
         table.append(row)
 
 render_crashreport = (crashreport) ->

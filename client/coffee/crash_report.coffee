@@ -94,15 +94,12 @@ render_stacktrace = (stack_name, pid, stack_data) ->
     row_template = table.find('tr:last')
     table.empty()
     table.append header
-    for i in [0..stack_data.length-1]
+    for line in stack_data
         contentObject = row_template.clone()
-        line = stack_data[i]
-        console.log i
         match = regexp.exec(line)
         if not match
             continue
         [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
-        console.log i
         args ?= ""
         address ?= "<unknown>"
         location ?= ""

@@ -77,17 +77,24 @@ render_process_state = (crashreport) ->
         fd = parse_ls_list crashreport["rich-core"].fd
         $('#fd_content pre').html fd
 
-render_stacktrace = (stack_name, pid, stack_data) ->
+render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
     #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
     #           frame    address                   func     args             context         isLib       location
 
-    stack_template = $('.stack_trace:first')
-    stack = stack_template.clone()
+    stack = $('.stack_trace:first').clone()
     $('#stack_traces').append(stack)
+
     stack.find('.stack_name').text stack_name
-    stack.find('.stack_pid').text if pid then "PID: " + pid else ""
+    if pid
+        stack.find('.stack_pid_content').text pid
+    else
+        stack.find('.stack_pid').detach()
+    if crash_reason
+        stack.find('.crash_reason_content').text crash_reason
+    else
+        stack.find('.crash_reason').detach()
 
     table = stack.find('.stack_trace_table')
     header = table.find('tr:first')
@@ -95,25 +102,18 @@ render_stacktrace = (stack_name, pid, stack_data) ->
     table.empty()
     table.append header
     for line in stack_data
-        contentObject = row_template.clone()
+        row = row_template.clone()
         match = regexp.exec(line)
         if not match
             continue
         [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
-        args ?= ""
-        address ?= "<unknown>"
-        location ?= ""
  
-        contentObject.find('.stack_trace_frame').text("#" + frameNr)
-        contentObject.find('.stack_trace_address').text address
-        contentObject.find('.stack_trace_function').text func + " " + args
-        contentObject.find('.stack_trace_context').text context
-        contentObject.find('.stack_trace_location').text location
-        table.append(contentObject)
-
-write_crash_reason = (crashreport) ->
-    reason = crashreport["stack-trace"]["crash_reason"]
-    $('#crash_reason').text reason
+        row.find('.stack_trace_frame').text("#" + frameNr)
+        row.find('.stack_trace_address').text if address then address else "<unknown>"
+        row.find('.stack_trace_function').text func + " " + if args then args else ""
+        row.find('.stack_trace_context').text context
+        row.find('.stack_trace_location').text if location then location else ""
+        table.append(row)
 
 render_crashreport = (crashreport) ->
     #Overview
@@ -159,16 +159,11 @@ render_crashreport = (crashreport) ->
     $('#download_stack_trace').attr "href", stack_url
 
     #Stack
-    render_stacktrace "crash stack", null, crashreport["stack-trace"]["crashstack"]
+    render_stacktrace "crash stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
     for name, thread of crashreport["stack-trace"]["threads"]
-        render_stacktrace name, thread["pid"], thread["stack"]
+        render_stacktrace name, thread["pid"], null, thread["stack"]
     $('.stack_trace:first').detach()
         
-
-
-    #render_stacktrace crashreport["stack-trace"]["threads"]["Thread 2"]["stack"]
-    write_crash_reason crashreport
-
     #Process state
     render_process_state crashreport
 

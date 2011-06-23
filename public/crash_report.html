@@ -152,19 +152,15 @@
                     <section id="crash_details">
                         <h1 class="page_divider">Crash Details <a href="" id="download_core_btn" class="ui_btn download">Download core</a> <a href="" id="download_rcore_btn" class="ui_btn download">Download rich core</a></h1>
 
-                        <article class="details_view">
-                        <h2>Crash Reason</h2>
-                        <div id="crash_reason">Fill reason here</div>
-                        </article>
-
                         <article id="stack_traces" class="details_view">
                             <h2>Stack Traces <a href="" id="download_stack_trace" class="download_link">Download</a></h2>
 
                             <div class="stack_trace">
                             <h3 class="stack_name">Stack</h3>
-                            <div class="stack_pid">Pid</div>
+                            <div class="stack_pid">PID: <span class="stack_pid_content">Pid</span></div>
+                            <div class="crash_reason">Crash Reason: <span class="crash_reason_content">Fill reason here</span></div>
 
-                            <table class="stack_trace_table">
+                            <table class="stack_trace_table" class="details">
                                 <tr>
                                     <th>Frame</th>
                                     <th>Address</th>

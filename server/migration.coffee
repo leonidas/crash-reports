@@ -20,8 +20,18 @@ exports.run_migrations = (rootdir, db, callback) ->
             callback([stamp, doc > 0])
 
     run_migration = (stamp) -> (callback) ->
-        # TODO: read migration script
-        # TODO: execute migrate function from script
+        fs.readFile filemap[stamp], (data) ->
+            js = eval(data)
+            js.migrate db, (err) ->
+                # TODO: handle error from migrate
+                doc =
+                    timestamp: stamp
+                    rundate: new Date()
+                    status "ok"
+
+                migrations.insert(doc).run callback
+
+
         # TODO: record statistics to migration object
         # TODO: store migration object to mongodb
         # TODO: signal migration finished via callback

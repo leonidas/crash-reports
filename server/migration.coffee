@@ -1,6 +1,7 @@
 
 EventEmitter = require('events').EventEmitter
 async = require('async')
+_     = require('underscore')
 
 running_migrations = false
 migrate_event = new EventEmitter()
@@ -23,7 +24,11 @@ exports.run_migrations = (rootdir, db, callback) ->
         fs.readFile filemap[stamp], (data) ->
             js = eval(data)
             js.migrate db, (err) ->
+                return callback err if err?
                 # TODO: handle error from migrate
+                if js.rollback?
+                    rollbacks.push(js.rollback)
+
                 doc =
                     timestamp: stamp
                     rundate: new Date()
@@ -35,11 +40,18 @@ exports.run_migrations = (rootdir, db, callback) ->
         m = {}
         callback null, m
 
+    rollback_migrations = (callback) ->
+        rollbacks.reverse()
+        rollback = (f) -> (cb) -> f(db, cb)
+        async.series(_.map(rollbacks, rollback), callback)
+
     mfiles  = fs.readdirSync mdir
     mfiles.sort()
 
-    filemap = {}
-    exists  = []
+    filemap   = {}
+    exists    = []
+    rollbacks = []
+
     for fn in mfiles
         stamp = stamp_re.match(fn)[1]
         filemap[stamp] = fn
@@ -54,7 +66,12 @@ exports.run_migrations = (rootdir, db, callback) ->
             runners.push(run_migration stamp) if exists
 
         async.series runners, (err, arr) ->
-            # TODO: rollback etc. on error
+            if err
+                return rollback_migrations (err2) ->
+                    # TODO: handle err2 (i.e. rollback failed)
+                    end_migrations()
+                    callback err
+
             end_migrations()
             callback null
 

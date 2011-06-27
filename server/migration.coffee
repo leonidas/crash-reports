@@ -28,13 +28,10 @@ exports.run_migrations = (rootdir, db, callback) ->
                     timestamp: stamp
                     rundate: new Date()
                     status "ok"
+                # TODO: what other data might be worthwhile to save?
 
                 migrations.insert(doc).run callback
 
-
-        # TODO: record statistics to migration object
-        # TODO: store migration object to mongodb
-        # TODO: signal migration finished via callback
         m = {}
         callback null, m
 

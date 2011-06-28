@@ -129,7 +129,7 @@ render_registers = (crashreport) ->
 
 render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
-    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
+    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in\s+)?(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
     #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
     #           frame    address                   func     args             context         isLib       location
 
@@ -163,7 +163,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
  
             row = row_template.clone()
             row.find('.stack_trace_frame').text("#" + frameNr)
-            row.find('.stack_trace_address').text if address then address else "<unknown>"
+            row.find('.stack_trace_address').text if address then address else "?"
             row.find('.stack_trace_function').text func + " " + if args then args else ""
             row.find('.stack_trace_context').text context
             row.find('.stack_trace_location').text if location then location else ""

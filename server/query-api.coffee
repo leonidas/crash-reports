@@ -6,7 +6,7 @@ SETTINGS         = {} #global settings
 
 STACK_SIMILARITY_LINES = 6
 
-crash_similarity_value = (crashreport) ->
+crash_similarity = (crashreport) ->
 
     stackframes_to_similarity_value = (stackframes) ->
         similarity = []
@@ -47,20 +47,15 @@ get_crashreports = (cb) ->
         return if err? then cb err, null else cb null, arr
 
 get_crashreport_by_id = (id, cb) ->
-        DB_CRASHREPORTS.find({"id":id}).run (err,arr) ->
-            return cb err,null if err?
-            return cb "ERROR: Crashreport not found with id:#{id}", null if arr.length == 0
-            if arr.length == 1
-                cb null, arr[0]
-            else
-                cb "ERROR: Multiple crashlogs found with id:#{id}", null
-
-get_crash_similarity_by_id = (id, cb) ->
     DB_CRASHREPORTS.find({"id":id}).one().run (err,crashreport) ->
         return cb err,null if err?
         return cb "ERROR: Crashreport not found with id:#{id}", null if not crashreport?
+        return cb null, crashreport
 
-        return cb null, crash_similarity_value(crashreport)
+get_crash_similarity_by_id = (id, cb) ->
+    get_crashreport_by_id id, (err, crashreport) ->
+        return if err? then cb err, null else cb null, crash_similarity(crashreport)
+
 
 init_query_api = (settings, app, db) ->
     DB_CRASHREPORTS = db.collection('crashreports')

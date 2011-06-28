@@ -42,6 +42,10 @@ crash_similarity_value = (crashreport) ->
     return stackframes_to_similarity_value(parse_stacktrace(crashreport["stack-trace"].crashstack))
 
 
+get_crashreports = (cb) ->
+    DB_CRASHREPORTS.find().run (err,arr) ->
+        return if err? then cb err, null else cb null, arr
+
 get_crashreport_by_id = (id, cb) ->
         DB_CRASHREPORTS.find({"id":id}).run (err,arr) ->
             return cb err,null if err?

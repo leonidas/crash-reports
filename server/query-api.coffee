@@ -55,10 +55,26 @@ get_crashreport_by_id = (id, cb) ->
         return cb "ERROR: Crashreport not found with id:#{id}", null if not crashreport?
         return cb null, crashreport
 
+get_crashreports_by_crashreason = (crashreason, cb) ->
+    DB_CRASHREPORTS.find({"stack-trace.crash_reason":crashreason}).run (err,arr) ->
+        return if err? then cb err, null else cb null, arr
+
 get_crash_similarity_by_id = (id, cb) ->
     get_crashreport_by_id id, (err, crashreport) ->
         return if err? then cb err, null else cb null, crash_similarity(crashreport)
 
+get_similar_crashes_by_id = (id, cb) ->
+    get_crashreport_by_id id, (err, crashreport) ->
+        return cb err, null if err?
+        # TODO: when similarity value is stored in db, this pre-filtering with crash reason will become obsolete
+        get_crashreports_by_crashreason crashreport["stack-trace"].crash_reason, (err, arr) ->
+            return cb err, null if err?
+            similarity = crash_similarity(crashreport)
+            ids_of_similar_crashes = []
+            for report in arr
+                if similarity == crash_similarity(report)
+                    ids_of_similar_crashes.push report.id
+            cb null, ids_of_similar_crashes
 
 init_query_api = (settings, app, db) ->
     DB_CRASHREPORTS = db.collection('crashreports')
@@ -72,9 +88,9 @@ init_query_api = (settings, app, db) ->
             else
                 res.send {"ok":"1","crashdata": crashdata}
 
-    app.get "/crashsimilarity/:id", (req, res) ->
+    app.get "/similarcrashes/:id", (req, res) ->
         id = req.params.id
-        get_crash_similarity_by_id id, (err,data) ->
+        get_similar_crashes_by_id id, (err,data) ->
             if err?
                 res.send {"ok":"0","errors": err} if err?
             else

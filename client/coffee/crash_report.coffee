@@ -46,6 +46,10 @@ parse_fragment = () ->
         return null if frag == ""
         decodeURIComponent frag
 
+fetch_all_similar_crashes = (id, cb) ->
+    $.getJSON "/similarcrashes/#{id}", (result) ->
+        cb? result
+
 load_crashreport_data = (id, callback) ->
      $.getJSON "/crashreports/#{id}", (data) ->
          callback? data
@@ -160,7 +164,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
             row.find('.stack_trace_info').text line
         else
             [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
- 
+
             row = row_template.clone()
             row.find('.stack_trace_frame').text("#" + frameNr)
             row.find('.stack_trace_address').text if address then address else "<unknown>"
@@ -191,6 +195,11 @@ render_crashreport = (crashreport) ->
     #Analysis
     $('#app_similar_crashes_num').text "-"
     $('#all_similar_crashes_num').text "-"
+    fetch_all_similar_crashes crashreport.id, (result) ->
+        console.log result
+        console.log result.data.length
+        if result?.data
+            $('#all_similar_crashes_num').text result.data.length
 
     # Related Bugs
     $('#related_bugs .tab1').empty()
@@ -219,7 +228,7 @@ render_crashreport = (crashreport) ->
     for name, thread of crashreport["stack-trace"]["threads"]
         render_stacktrace name, thread["pid"], null, thread["stack"]
     $('.stack_trace:first').detach()
-        
+
     #Process state
     render_process_state crashreport
 

@@ -59,6 +59,23 @@ write_link = (dom, text, link) ->
     $dom.text text
     $dom.attr "href", link
 
+render_attachments = (crashreport) ->
+    list = $("#attachment_list")
+    template = list.find('.attachment')
+    list.empty()
+    attachments = crashreport.files.attachments
+    if !attachments? or attachments.length == 0
+        attachment = template.clone()
+        attachment.html "none"
+        list.append attachment
+        return
+    for att in attachments
+        attachment = template.clone()
+        attachment.find('a').text att.origname + " (" + att.type + ")"
+        attachment.find('a').attr "href", att.path
+        attachment.find('a').attr "type", att.type
+        list.append attachment
+
 parse_ls_list = (ls_list) ->
     ls_list = _(ls_list).map (line) ->
         return line if !line.match /^[dlrwx-]{10}\s/
@@ -212,6 +229,9 @@ render_crashreport = (crashreport) ->
     $('#download_core_btn').attr "href", core_url
     $('#download_rcore_btn').attr "href", rcore_url
     $('#download_stack_trace').attr "href", stack_url
+
+    #Attachments
+    render_attachments crashreport
 
     #Stack
     render_registers crashreport

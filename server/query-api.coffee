@@ -8,7 +8,7 @@ STACK_SIMILARITY_LINES = 6
 
 crash_similarity = (crashreport) ->
 
-    stackframes_to_similarity_value = (stackframes) ->
+    stack_similarity_value = (stackframes) ->
         similarity = []
         for i in [0..(STACK_SIMILARITY_LINES-1)]
             if stackframes[i]?
@@ -39,7 +39,10 @@ crash_similarity = (crashreport) ->
         #console.log stackframes #debug
         return stackframes
 
-    return stackframes_to_similarity_value(parse_stacktrace(crashreport["stack-trace"].crashstack))
+    similarity_value =  crashreport["stack-trace"].crash_reason
+    similarity_value += " " + stack_similarity_value(parse_stacktrace(crashreport["stack-trace"].crashstack))
+
+    return similarity_value
 
 
 get_crashreports = (cb) ->

@@ -76,6 +76,17 @@ get_similar_crashes_by_id = (id, cb) ->
                     ids_of_similar_crashes.push report.id
             cb null, ids_of_similar_crashes
 
+get_crashreports_by_appname = (appname, cb) ->
+    ids_of_crashes = []
+    get_crashreports (err, arr) ->
+        return cb err, null if err?
+        for report in arr
+            #TODO: appname now parsed in both server and client side, store appname in db or make query for appname in server side
+            if appname == report["rich-core"].cmdline.replace(/\s+.*$/,'').replace(/^.*\//,'')
+                ids_of_crashes.push report.id
+        cb null, ids_of_crashes
+
+
 init_query_api = (settings, app, db) ->
     DB_CRASHREPORTS = db.collection('crashreports')
     SETTINGS        = settings
@@ -96,6 +107,13 @@ init_query_api = (settings, app, db) ->
             else
                 res.send {"ok":"1","data": data}
 
+    app.get "/crashesforapp/:appname", (req, res) ->
+        appname = req.params.appname
+        get_crashreports_by_appname appname, (err, data) ->
+            if err?
+                res.send {"ok":"0","errors": err} if err?
+            else
+                res.send {"ok":"1","data": data}
 
 
 exports.init_query_api        = init_query_api

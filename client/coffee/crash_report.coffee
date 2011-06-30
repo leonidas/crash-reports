@@ -46,6 +46,14 @@ parse_fragment = () ->
         return null if frag == ""
         decodeURIComponent frag
 
+fetch_all_similar_crashes = (id, cb) ->
+    $.getJSON "/similarcrashes/#{id}", (result) ->
+        cb? result
+
+fetch_crashes_by_app = (appname, cb) ->
+    $.getJSON "/crashesforapp/#{appname}", (result) ->
+        cb? result
+
 load_crashreport_data = (id, callback) ->
      $.getJSON "/crashreports/#{id}", (data) ->
          callback? data
@@ -58,6 +66,23 @@ write_link = (dom, text, link) ->
     #TODO: add link tag if not exist
     $dom.text text
     $dom.attr "href", link
+
+render_attachments = (crashreport) ->
+    list = $("#attachment_list")
+    template = list.find('.attachment')
+    list.empty()
+    attachments = crashreport.files.attachments
+    if !attachments? or attachments.length == 0
+        attachment = template.clone()
+        attachment.html "none"
+        list.append attachment
+        return
+    for att in attachments
+        attachment = template.clone()
+        attachment.find('a').text att.origname + " (" + att.type + ")"
+        attachment.find('a').attr "href", att.path
+        attachment.find('a').attr "type", att.type
+        list.append attachment
 
 parse_ls_list = (ls_list) ->
     ls_list = _(ls_list).map (line) ->
@@ -129,7 +154,11 @@ render_registers = (crashreport) ->
 
 render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
+<<<<<<< HEAD
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
+=======
+    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in\s+)?(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
+>>>>>>> master
     #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
     #           frame    address                   func     args             context         isLib       location
 
@@ -160,7 +189,7 @@ render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
             row.find('.stack_trace_info').text line
         else
             [_, frameNr, _, address, _, func, args, context, _, isLib, location] = match
- 
+
             row = row_template.clone()
             row.find('.stack_trace_frame').text("#" + frameNr)
             row.find('.stack_trace_address').text if address then address else "<unknown>"
@@ -191,6 +220,13 @@ render_crashreport = (crashreport) ->
     #Analysis
     $('#app_similar_crashes_num').text "-"
     $('#all_similar_crashes_num').text "-"
+    fetch_all_similar_crashes crashreport.id, (ids_by_similarity) ->
+        if ids_by_similarity?.data
+            $('#all_similar_crashes_num').text ids_by_similarity.data.length
+            fetch_crashes_by_app application, (ids_by_app) ->
+                if ids_by_app?.data
+                    app_similars = _.intersect ids_by_app.data, ids_by_similarity.data
+                    $('#app_similar_crashes_num').text app_similars.length
 
     # Related Bugs
     $('#related_bugs .tab1').empty()
@@ -213,13 +249,20 @@ render_crashreport = (crashreport) ->
     $('#download_rcore_btn').attr "href", rcore_url
     $('#download_stack_trace').attr "href", stack_url
 
+    #Attachments
+    render_attachments crashreport
+
     #Stack
     render_registers crashreport
     render_stacktrace "Crash Stack", null, crashreport["stack-trace"]["crash_reason"], crashreport["stack-trace"]["crashstack"]
     for name, thread of crashreport["stack-trace"]["threads"]
         render_stacktrace name, thread["pid"], null, thread["stack"]
     $('.stack_trace:first').detach()
-        
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> master
     #Process state
     render_process_state crashreport
 

@@ -154,11 +154,8 @@ render_registers = (crashreport) ->
 
 render_stacktrace = (stack_name, pid, crash_reason, stack_data) ->
 
-<<<<<<< HEAD
-    regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in)?\s+(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
-=======
     regexp = /^#(\d+)\s+((0x[\da-fA-F]+)\s+in\s+)?(([^ \(]+)(\([^\)]*\))?)\s+(\([^\)]*\))(\s+(at|from)\s+([^ ]+).*)?$/
->>>>>>> master
+
     #           ^^^^^    ^^^^^^^^^^^^^^^           ^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^    ^^^^^^^^^   ^^^^^^^
     #           frame    address                   func     args             context         isLib       location
 

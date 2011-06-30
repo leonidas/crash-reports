@@ -26,25 +26,22 @@ redirect_to_index = () ->
     window.location = "http://" + window.location.host #redirect to index
 
 initialize_application = () ->
-    frag = parse_fragment()
-    if not frag?
-        #TODO: redirect to search
+    reportid = parse_url()
+    if not reportid?
         redirect_to_index()
     else
-        #console.log "frag=#{frag}" #debug
         clear_crashreport()
-        load_crashreport_data frag, (data) ->
+        load_crashreport_data reportid, (data) ->
             if data?.crashdata
                 render_crashreport(data.crashdata)
             else
                 redirect_to_index()
 
-parse_fragment = () ->
-    frag = window.location.hash
-    if frag?
-        frag = frag.substring(1)
-        return null if frag == ""
-        decodeURIComponent frag
+parse_url = () ->
+    if window.location.pathname.match /^\/.+\/(.+)$/
+        decodeURIComponent RegExp.$1
+    else
+        null
 
 fetch_all_similar_crashes = (id, cb) ->
     $.getJSON "/similarcrashes/#{id}", (result) ->

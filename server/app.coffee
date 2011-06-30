@@ -6,6 +6,7 @@ MongoStore = require('connect-mongo')
 _          = require('underscore')
 import_api = require('import-api')
 query_api  = require('query-api')
+fs         = require('fs')
 
 create_app = (settings, db) ->
     basedir = settings.app.root
@@ -77,6 +78,12 @@ create_app = (settings, db) ->
               'Content-Length': body.length,
               'Content-Type': 'text/html'
             return res.end body
+
+    app.get "/crashreport/:id", (req, res) ->
+        #id = req.params.id
+        fs.readFile "#{PUBLIC}/crash_report.html", 'utf8', (err, html) ->
+            return res.send {"ok":0,"errors":err} if err?
+            return res.send html
 
     # for debugging crashreport parsing
     app.get "/crashreports_parse/:id", (req, res) ->

@@ -50,6 +50,10 @@ fetch_all_similar_crashes = (id, cb) ->
     $.getJSON "/similarcrashes/#{id}", (result) ->
         cb? result
 
+fetch_crashes_by_app = (appname, cb) ->
+    $.getJSON "/crashesforapp/#{appname}", (result) ->
+        cb? result
+
 load_crashreport_data = (id, callback) ->
      $.getJSON "/crashreports/#{id}", (data) ->
          callback? data
@@ -195,11 +199,13 @@ render_crashreport = (crashreport) ->
     #Analysis
     $('#app_similar_crashes_num').text "-"
     $('#all_similar_crashes_num').text "-"
-    fetch_all_similar_crashes crashreport.id, (result) ->
-        console.log result
-        console.log result.data.length
-        if result?.data
-            $('#all_similar_crashes_num').text result.data.length
+    fetch_all_similar_crashes crashreport.id, (ids_by_similarity) ->
+        if ids_by_similarity?.data
+            $('#all_similar_crashes_num').text ids_by_similarity.data.length
+            fetch_crashes_by_app application, (ids_by_app) ->
+                if ids_by_app?.data
+                    app_similars = _.intersect ids_by_app.data, ids_by_similarity.data
+                    $('#app_similar_crashes_num').text app_similars.length
 
     # Related Bugs
     $('#related_bugs .tab1').empty()

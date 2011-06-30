@@ -5,6 +5,7 @@ set :server_port, 3040
 set :application, server_host
 set :deploy_to, "/home/#{user}/#{application}"
 set :node_env, "staging"
+set :keep_releases, 5
 
 ssh_options[:port] = 31915
 

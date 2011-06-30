@@ -70,7 +70,7 @@ create_app = (settings, db) ->
 
             body = "Crashreports index:<br>"
             _.each arr, (item) ->
-                linkurl  = "#{settings.server.url}/crash_report.html\##{item.id}"
+                linkurl  = "#{settings.server.url}/crashreport/#{item.id}"
                 linktext = "#{item.product} #{item.files['rich-core'].origname}"
                 body    += "<a href=\"#{linkurl}\">#{linktext}</a><br>"
 

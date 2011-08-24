@@ -51,7 +51,7 @@ namespace :deploy do
 
   desc "Install node packages"
   task :install_node_packages, roles => :app do
-    run "cd #{release_path} && npm install --unsafe"
+    run "cd #{release_path} && npm install --mongodb:native"
   end
 
   namespace :settings do

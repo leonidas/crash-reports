@@ -13,7 +13,7 @@
     "nodeunit": "0.5.1",
     "zombie": "0.9.4",
     "supervisor": "0.1.2",
-    "forever": "0.4.0",
+    "forever": "0.6.0",
     "eyes": "0.1.6",
     "connect-mongo": "0.1.1",
     "connect-form": "0.2.1",
